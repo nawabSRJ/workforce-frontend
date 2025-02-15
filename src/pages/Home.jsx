@@ -5,6 +5,10 @@ import exploreVideo from '../assets/exploreVideo.mp4'
 import arrow1 from '../assets/arrow.webp'
 import ReviewComponent from '../Components/ReviewComponent';
 import Footer from '../Components/Footer';
+<<<<<<< HEAD
+=======
+import FAQ from '../Components/faq';
+>>>>>>> 09f38a7 (Initial commit: Added Workforce-Frontend project)
 import { services } from '../Data/Services';
 export default function Home() {
     return (
@@ -36,6 +40,7 @@ export default function Home() {
             <br></br>
             <br></br>
             <br></br>
+<<<<<<< HEAD
             {/* Service Cards Section */}
             <section className='our-services-section w-full h-fit'>
                 <div className='services-marquee overflow-x-auto whitespace-nowrap bg-gray-100 '>
@@ -66,6 +71,44 @@ export default function Home() {
                 </div>
                 <br></br>
             </section>
+=======
+           {/* Service Cards Section */}
+<section className='our-services-section w-full h-fit'>
+    <div className='services-marquee overflow-x-auto whitespace-nowrap bg-gray-100 '>
+        <div className="animate-marquee flex flex-row gap-5 sm:p-5 flex-nowrap">
+            {services.map((v, i) => (
+                <ServiceCard 
+                    key={i} 
+                    name={v.serviceName} 
+                    desc={v.serviceDesc} 
+                    image={v.image} // ✅ Ensure image is passed
+                />
+            ))}
+        </div>
+    </div>
+    
+    <br /><br />
+
+    {/* Partners Section */}
+    <div className='w-[70%] bg-white-300 mx-auto'>
+    <h1 className='text-center text-black text-2xl font-semibold my-5 mx-auto'>
+        Our Partners
+    </h1>
+    <div className='partners-marquee overflow-x-auto whitespace-nowrap bg-white-100'>
+        <div className="animate-marquee flex flex-row gap-5 sm:p-5 flex-nowrap">
+            <ServiceCard />
+            <ServiceCard />
+            <ServiceCard />
+            <ServiceCard />
+            <ServiceCard />
+        </div>
+    </div>
+</div>
+    
+    <br />
+</section>
+
+>>>>>>> 09f38a7 (Initial commit: Added Workforce-Frontend project)
 
             <section className='vid-section w-1/1 sm:h-[500px] bg-[#F3CCE7] flex sm:flex-row flex-col sm:px-40 px-5 sm:py-20 py-10 '>
 
@@ -93,7 +136,11 @@ export default function Home() {
                     <ReviewComponent />
                 </div>
             </section>
+<<<<<<< HEAD
 
+=======
+            <FAQ/>
+>>>>>>> 09f38a7 (Initial commit: Added Workforce-Frontend project)
             <Footer />
         </>
     )

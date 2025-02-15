@@ -1,5 +1,5 @@
-import React, { useState,useEffect } from 'react';
-import './index.css'
+import React, { useState, useEffect } from 'react';
+import './index.css';
 import ClientDash from './pages/ClientDash';
 import Home from './pages/Home';
 import axios from 'axios';
@@ -11,15 +11,14 @@ function App() {
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
   useEffect(() => {
     axios.get('http://localhost:8000/', { withCredentials: true })
       .then(res => {
         if (res.data.status === "Success") {
           setAuth(true);
-          
         } else {
           setAuth(false);
-          
         }
       })
       .catch(err => {
@@ -30,16 +29,7 @@ function App() {
 
   return (
     <div>
-      {
-        auth 
-        ? 
-        (
-          <ClientDash setAuth={setAuth} />
-        )
-          : (
-            <Home />
-          )
-      }
+      {auth ? <ClientDash setAuth={setAuth} /> : <Home />}
     </div>
   );
 }

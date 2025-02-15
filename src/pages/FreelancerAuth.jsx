@@ -4,7 +4,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
-export default function ClientAuth() {
+export default function FreelancerAuth() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -16,11 +16,11 @@ export default function ClientAuth() {
   const handleSignIn = (e) => {
     e.preventDefault();
     setLoading(true);
-    axios.post('http://localhost:8000/client-login', { email, password })
+    axios.post('http://localhost:8000/freelancer-login', { email, password })
       .then(result => {
         console.log(result); // debugging
         if (result.data.message === "Success") {
-          navigate('/client-dash', { state: { user: result.data.user } });
+          navigate('/freelancer-dash', { state: { user: result.data.user } });
           localStorage.setItem('logged', true)
           setLoading(false);
         } else if (result.data.message === "Not Found") {
@@ -58,35 +58,29 @@ export default function ClientAuth() {
     return true;
   };
   
-
   // function to handle SignUp
   const handleSignUp = (e) => {
     e.preventDefault();
-
-    // Validate inputs before proceeding
     if (!validateInputs()) {
-      return; // Exit if validation fails
+      return;
     }
-    setLoading(true); // when the request starts -> set to true
-    axios.post('http://localhost:8000/client-signup', { name, email, password })
+    setLoading(true);
+    axios.post('http://localhost:8000/freelancer-signup', { name, email, password })
       .then(result => {
-        console.log(result)
-
+        console.log(result);
         toast.success('Signup successful! Check your email for confirmation.');
-        navigate('/client-dash')
+        navigate('/freelancer-dash');
       })
       .catch(err => console.log(err));
-  }
+  };
 
   return (
     <div
       className={`flex justify-center items-center min-h-screen bg-gray-100 transition-all duration-500 ${isSignUp ? "bg-blue-200" : "bg-gray-100"}`}
     >
-      {/* Toast notification container */}
       <ToastContainer />
 
       <div className="relative w-96 p-8 bg-white shadow-lg rounded-xl overflow-hidden">
-        {/* Forms */}
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">
             {isSignUp ? "Create Account" : "Sign In"}
@@ -126,7 +120,6 @@ export default function ClientAuth() {
           </button>
         </form>
 
-        {/* Toggle Button */}
         <div className="mt-4 text-center">
           <p className="text-sm text-gray-600">
             {isSignUp ? "Already have an account?" : "Don't have an account?"}
@@ -140,5 +133,5 @@ export default function ClientAuth() {
         </div>
       </div>
     </div>
-  )
+  );
 }

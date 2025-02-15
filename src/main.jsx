@@ -8,15 +8,29 @@ import Dashboard from './pages/ClientDashboard';
 import ClientDash from './pages/ClientDash';
 import DashSideBar from './Components/DashSideBar';
 import ClientAuth from './pages/ClientAuth';
+<<<<<<< HEAD
 
+=======
+import FreelancerAuth from './pages/FreelancerAuth';
+import AdminAuth from './pages/AdminAuth';
+import AdminDashboard from './pages/AdminDashboard';
+import FreelancerDash from './pages/FreelancerDashboard';
+>>>>>>> 09f38a7 (Initial commit: Added Workforce-Frontend project)
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 let allRoutes = createBrowserRouter(
     [
+<<<<<<< HEAD
         {
             path:'/',
             element:<App/>
         },
+=======
+      {
+        path:'/',
+        element:<App/>
+      },
+>>>>>>> 09f38a7 (Initial commit: Added Workforce-Frontend project)
         {
             path:'/contract',
             element:<ContractGen/>
@@ -35,7 +49,30 @@ let allRoutes = createBrowserRouter(
         },{
           path:'/client-auth',
           element:<ClientAuth/>
+<<<<<<< HEAD
         }
+=======
+        },
+        {
+          path:'/freelancer-auth',
+          element:<FreelancerAuth/>
+        },
+        {
+          path:'/admin-auth',
+          element:<AdminAuth/>
+        },
+        {
+          path:'/admin-dashboard',
+          element:<AdminDashboard/>
+        },
+        {
+          path:'/freelancer-dash',
+          element:<FreelancerDash/>
+        }
+        
+        
+        
+>>>>>>> 09f38a7 (Initial commit: Added Workforce-Frontend project)
     ]
 )
 
