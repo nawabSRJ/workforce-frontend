@@ -1,6 +1,7 @@
 import React from 'react'
 import SocialCard from '../Components/ServiceCard'
 import Logo from '../Components/Logo'
+// small change
 
 
 export default function Footer() {

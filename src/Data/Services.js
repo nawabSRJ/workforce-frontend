@@ -1,4 +1,6 @@
 // json data for the services
+// small change
+
 export const services = [
     {
         id:1,

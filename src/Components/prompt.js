@@ -1,3 +1,5 @@
+// small change
+
 export const prompt = `You will be given some chats text between a client and a freelancer and using those chats you have to create a formal contract. These things are mandatory to maintain in the contract :
 "WorkFoce Contract" heading 
 Name of freelancer : 

@@ -1,3 +1,5 @@
+// small change
+
 export const projects = [
     {
         title: 'E-commerce Website Development',

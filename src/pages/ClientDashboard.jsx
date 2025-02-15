@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Plus } from 'lucide-react';
+// small change
 
 const ProjectCard = ({ title, description, tags, assignee, dueDate, progress, amount, status, completedDate }) => (
   <div className="p-4 border border-gray-200 rounded-lg mb-4">

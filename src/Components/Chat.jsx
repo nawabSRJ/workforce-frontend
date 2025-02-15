@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
-
+// small change
 const socket = io("http://localhost:5000");
 
 export default function Chat({ user, receiver }) {

@@ -7,6 +7,8 @@ import { projects } from '../Data/projects';
 import Chat from '../Components/Chat';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+// small change
+
 export default function ClientDash(setAuth) {
     const [select, setSelect] = useState('Home'); // for state of DashSideBar tabs
     const user = { id: "1", name: "User1" };

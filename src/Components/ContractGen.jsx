@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { prompt } from "./prompt";
-
+// small change
 function GeminiInReact() {  
   const [inputValue, setInputValue] = useState("");
   const [promptResponses, setpromptResponses] = useState([]);

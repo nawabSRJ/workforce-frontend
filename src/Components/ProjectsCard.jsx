@@ -1,6 +1,5 @@
 import React, {useState} from 'react'
-
-
+// small change
 export default function ProjectsCard({ title, description, tags, assignee, dueDate, progress, amount, status, completeDate }) {
     const [activeTab, setActiveTab] = useState('All Projects');
     const tabs = ['All Projects', 'Active', 'Pending', 'Completed'];

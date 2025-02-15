@@ -1,5 +1,7 @@
 import React from 'react'
 import pic from '../assets/profilePic1.webp'
+// small change
+
 export default function ReviewComponent() {
     return (
         <div className='border-black border-2 p-1 flex flex-row w-[30%] rounded-xl bg-[#FEFEFF]'>

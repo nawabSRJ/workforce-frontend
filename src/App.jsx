@@ -3,7 +3,7 @@ import './index.css'
 import ClientDash from './pages/ClientDash';
 import Home from './pages/Home';
 import axios from 'axios';
-
+// small change
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [auth, setAuth] = useState(false);

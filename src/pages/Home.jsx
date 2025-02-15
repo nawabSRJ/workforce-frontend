@@ -6,6 +6,8 @@ import arrow1 from '../assets/arrow.webp'
 import ReviewComponent from '../Components/ReviewComponent';
 import Footer from '../Components/Footer';
 import { services } from '../Data/Services';
+// small change
+
 export default function Home() {
     return (
         <>{/* Navbar */}
