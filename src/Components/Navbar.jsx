@@ -17,7 +17,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="navbar relative flex flex-row items-center justify-between sm:px-10 px-5 py-4 bg-white shadow-md">
+    <nav className="navbar relative flex items-center justify-between px-5 py-4 bg-white shadow-md sm:px-10">
       {/* Logo */}
       <Logo />
 
@@ -30,7 +30,7 @@ const Navbar = () => {
 
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 bg-gray-900 bg-opacity-90 z-50 flex flex-col items-center justify-center">
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-90 z-50 flex flex-col items-center justify-center sm:hidden">
           {/* Close Button */}
           <div className="absolute top-5 right-5">
             <X onClick={toggleMobileMenu} className="cursor-pointer text-white" size={24} />
@@ -78,16 +78,16 @@ const Navbar = () => {
             Sign Up
           </button>
           {isSignupDropdownOpen && (
-            <div className="absolute left-0 mt-3 w-48 bg-white/10 backdrop-blur-xl shadow-lg rounded-lg border border-white/20 overflow-hidden animate-fadeIn">
+            <div className="absolute left-0 mt-3 w-48 bg-white shadow-lg rounded-lg border border-gray-200 overflow-hidden animate-fadeIn">
               <button
                 onClick={() => navigate('/client-auth')}
-                className="block w-full px-5 py-3 text-white bg-black/50 hover:bg-black/70 transition-all"
+                className="block w-full px-5 py-3 text-gray-700 hover:bg-gray-100 transition-all"
               >
                 User
               </button>
               <button
                 onClick={() => navigate('/freelancer-auth')}
-                className="block w-full px-5 py-3 text-white bg-black/50 hover:bg-black/70 transition-all"
+                className="block w-full px-5 py-3 text-gray-700 hover:bg-gray-100 transition-all"
               >
                 Freelancer
               </button>

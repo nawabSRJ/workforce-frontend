@@ -1,6 +1,6 @@
 
 // json data for the services
-export const services = [
+/*export const services = [
     {
         id:1,
         serviceName:'Development',
@@ -31,8 +31,8 @@ export const services = [
         serviceName:'Logo Design',
         serviceDesc:'Professional Logo Designers',
     },
-]
-const services = [
+]*/
+export const services = [
     {
         id: 1,
         serviceName: "Development",
@@ -70,5 +70,3 @@ const services = [
         image: new URL("../assets/logo design.jpg", import.meta.url).href,
     },
 ];
-
-export default services

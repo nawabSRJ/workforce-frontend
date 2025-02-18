@@ -1,14 +1,21 @@
 import React from 'react'
 import pic from '../assets/profilePic1.webp'
+
 export default function ReviewComponent() {
     return (
-        <div className='border-black border-2 p-1 flex flex-row w-[30%] rounded-xl bg-[#FEFEFF]'>
-            <div className='pic w-[60px] h-[60px] ml-1 mr-4 mt-1 bg-slate-500 rounded-full'>
-                    <img src={pic} className='w-1/1 h-1/1'/>
+        <div className='border-black border-2 p-3 flex flex-col sm:flex-row items-center w-full sm:w-[45%] md:w-[30%] rounded-xl bg-[#FEFEFF] shadow-md'>
+            
+            {/* Profile Image */}
+            <div className='w-[60px] h-[60px] mb-3 sm:mb-0 sm:mr-4 bg-slate-500 rounded-full flex-shrink-0'>
+                <img src={pic} className='w-full h-full object-cover rounded-full' />
             </div>
-            <div className='matter w-[70%]'>
-                    <h1 className='font-bold '>Name</h1>
-                    <p className='font-semibold '>It was a fantastic experience using the WorkForce!!It was a fantastic experience using the WorkForce!!It was a fantastic experience using the WorkForce!!</p>
+
+            {/* Review Content */}
+            <div className='text-center sm:text-left flex-1'>
+                <h1 className='font-bold text-lg'>Name</h1>
+                <p className='text-sm text-gray-700 leading-tight'>
+                    It was a fantastic experience using WorkForce! Highly recommended for professionals!
+                </p>
             </div>
         </div>
     )

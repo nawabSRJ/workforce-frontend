@@ -5,142 +5,91 @@ import exploreVideo from '../assets/exploreVideo.mp4'
 import arrow1 from '../assets/arrow.webp'
 import ReviewComponent from '../Components/ReviewComponent';
 import Footer from '../Components/Footer';
-<<<<<<< HEAD
-=======
 import FAQ from '../Components/faq';
->>>>>>> 09f38a7 (Initial commit: Added Workforce-Frontend project)
 import { services } from '../Data/Services';
+
 export default function Home() {
     return (
-        <>{/* Navbar */}
+        <>
+            {/* Navbar */}
             <Navbar />
+
             {/* Hero Section */}
-            <section className='hero w-full h-fit mt-10 px-5'>
-                <h1 className='text-xl sm:text-3xl text-center mx-auto mt-2 mb-3 font-thin'>
+            <section className='hero w-full h-fit mt-10 px-5 text-center'>
+                <h1 className='text-xl sm:text-3xl font-thin'>
                     Hire the Best Professionals
                 </h1>
-                <h1 className='text-2xl sm:text-5xl text-center mx-auto my-3 font-bold'>
+                <h1 className='text-2xl sm:text-5xl my-3 font-bold'>
                     Get the Job DONE ASAP
                 </h1>
-                <p className='info text-md text-center font-serif w-full sm:w-[55%] mx-auto mt-7 text-wrap'>
-                    At <b>WorkForce</b> we are revolutionising the contract-based gig worker industry with a platform to connect you with skilled professionals.
+                <p className='info text-md font-serif w-full sm:w-[55%] mx-auto mt-7 text-wrap'>
+                    At <b>WorkForce</b>, we are revolutionizing the contract-based gig worker industry with a platform to connect you with skilled professionals.
                 </p>
 
-                <div className='heroBtns mx-auto text-center my-7'>
-                    <button className='bg-black text-white text-xl text-center px-4 py-2 rounded-full m-3'>
+                {/* Buttons */}
+                <div className='heroBtns mx-auto text-center my-7 flex flex-wrap justify-center gap-4'>
+                    <button className='bg-black text-white text-xl px-4 py-2 rounded-full'>
                         Get Started
                     </button>
-                    <button className='bg-black text-white text-xl text-center px-4 py-2 rounded-full m-3'>
+                    <button className='bg-black text-white text-xl px-4 py-2 rounded-full'>
                         Contact Us
                     </button>
                 </div>
             </section>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-<<<<<<< HEAD
-            {/* Service Cards Section */}
-            <section className='our-services-section w-full h-fit'>
-                <div className='services-marquee overflow-x-auto whitespace-nowrap bg-gray-100 '>
-                    <div className="animate-marquee flex flex-row gap-5 sm:p-5 flex-nowrap">
-                        {
-                            services.map((v, i) => {
-                                return (
-                                    <ServiceCard key={i} name={v.serviceName} desc={v.serviceDesc} />
-                                )
-                            })
-                        }
 
-                    </div>
-                </div>
-                <br></br>
-                <br></br>
-                <div className='w-[70%] bg-white-300 mx-auto'>
-                    <h1 className='text-center text-black text-2xl font-semibold my-5 mx-auto '>Our Partners</h1>
-                    <div className='partners-marquee overflow-x-auto whitespace-nowrap bg-white-100 '>
-                        <div className="animate-marquee flex flex-row gap-5 sm:p-5 flex-nowrap">
-                            <ServiceCard />
-                            <ServiceCard />
-                            <ServiceCard />
-                            <ServiceCard />
-                            <ServiceCard />
-                        </div>
-                    </div>
-                </div>
-                <br></br>
-            </section>
-=======
-           {/* Service Cards Section */}
-<section className='our-services-section w-full h-fit'>
-    <div className='services-marquee overflow-x-auto whitespace-nowrap bg-gray-100 '>
-        <div className="animate-marquee flex flex-row gap-5 sm:p-5 flex-nowrap">
-            {services.map((v, i) => (
-                <ServiceCard 
-                    key={i} 
-                    name={v.serviceName} 
-                    desc={v.serviceDesc} 
-                    image={v.image} // ✅ Ensure image is passed
-                />
-            ))}
-        </div>
-    </div>
-    
-    <br /><br />
-
-    {/* Partners Section */}
-    <div className='w-[70%] bg-white-300 mx-auto'>
-    <h1 className='text-center text-black text-2xl font-semibold my-5 mx-auto'>
-        Our Partners
-    </h1>
-    <div className='partners-marquee overflow-x-auto whitespace-nowrap bg-white-100'>
-        <div className="animate-marquee flex flex-row gap-5 sm:p-5 flex-nowrap">
-            <ServiceCard />
-            <ServiceCard />
-            <ServiceCard />
-            <ServiceCard />
-            <ServiceCard />
-        </div>
-    </div>
-</div>
-    
-    <br />
-</section>
-
->>>>>>> 09f38a7 (Initial commit: Added Workforce-Frontend project)
-
-            <section className='vid-section w-1/1 sm:h-[500px] bg-[#F3CCE7] flex sm:flex-row flex-col sm:px-40 px-5 sm:py-20 py-10 '>
-
-                <div className='vid-left w-[55%] bg-transparent m-1 p-3'>
-                    <h1 className='text-4xl font-bold'>Hit Play to know our World</h1>
-                    <p className='my-5 font-medium z-10 absolute text-wrap'>Explore the world of WorkForce. Know how we are transforming the <br></br> freelancing  industry and contractual work culture across the <br></br> nation. Watch now to see the magic unfold</p>
-                    <img src={arrow1} className=' relative -top-20 left-0 h-3/3 w-5/5 bg-transparent z-0' />
-                </div>
-                <div className='vid-right w-[45%] bg-transparent m-1 p-0 '>
-                    <video src={exploreVideo} controls={true} className='w-1/1 h-1/1 rounded-xl' />
+            {/* Services Section */}
+            <section className='our-services-section w-full h-fit bg-gray-100 py-10'>
+                <h2 className='text-2xl text-center font-semibold mb-5'>Our Services</h2>
+                <div className='flex flex-wrap justify-center gap-5 px-5'>
+                    {services.map((v, i) => (
+                        <ServiceCard key={i} name={v.serviceName} desc={v.serviceDesc} image={v.image} />
+                    ))}
                 </div>
             </section>
-            <br></br>
-            <br></br>
 
-            <section className='testimonial-section w-1/1 sm:h-[600px] bg-slate-100'>
-                <h1 className='text-2xl text-center pt-4 font-semibold'>Our happy Customers</h1>
-                <div className='reviews-div px-10 py-20 flex flex-row flex-wrap gap-5 bg-slate-100 w-[90%] mx-auto'>
-                    {/* pic name msg in props */}
-                    <ReviewComponent />
-                    <ReviewComponent />
+            {/* Partners Section */}
+            <section className='partners-section w-full bg-white py-10'>
+                <h2 className='text-2xl text-center font-semibold mb-5'>Our Partners</h2>
+                <div className='flex flex-wrap justify-center gap-5 px-5'>
+                    <ServiceCard />
+                    <ServiceCard />
+                    <ServiceCard />
+                    <ServiceCard />
+                    <ServiceCard />
+                </div>
+            </section>
+
+            {/* Video Section */}
+            <section className='vid-section w-full sm:h-[500px] bg-[#F3CCE7] flex flex-col sm:flex-row items-center px-5 sm:px-40 py-10 sm:py-20 relative'>
+
+                {/* Left Text Section */}
+                <div className='vid-left w-full sm:w-[55%] bg-transparent p-3 text-center sm:text-left relative'>
+                    <h1 className='text-3xl sm:text-4xl font-bold'>Hit Play to Know Our World</h1>
+                    <p className='my-5 font-medium text-wrap'>
+                        Explore the world of WorkForce. Know how we are transforming the freelancing industry and contractual work culture across the nation. Watch now to see the magic unfold.
+                    </p>
+                    <img src={arrow1} className='hidden sm:block w-16 sm:w-24 absolute bottom-[-20px] left-[50%] sm:left-[35%] transform -translate-x-1/2 rotate-[15deg]' />
+                </div>
+
+                {/* Right Video Section */}
+                <div className='vid-right w-full sm:w-[45%] bg-transparent p-0 flex justify-center'>
+                    <video src={exploreVideo} controls className='w-[90%] sm:w-full h-auto rounded-xl' />
+                </div>
+            </section>
+
+            {/* Testimonials Section */}
+            <section className='testimonial-section w-full bg-slate-100 py-10'>
+                <h1 className='text-2xl text-center font-semibold mb-5'>Our Happy Customers</h1>
+                <div className='reviews-div px-5 sm:px-10 flex flex-wrap justify-center gap-5'>
                     <ReviewComponent />
                     <ReviewComponent />
                     <ReviewComponent />
                     <ReviewComponent />
                 </div>
             </section>
-<<<<<<< HEAD
 
-=======
-            <FAQ/>
->>>>>>> 09f38a7 (Initial commit: Added Workforce-Frontend project)
+            {/* FAQ & Footer */}
+            <FAQ />
             <Footer />
         </>
     )
