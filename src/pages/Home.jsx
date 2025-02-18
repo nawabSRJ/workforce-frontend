@@ -1,8 +1,8 @@
-import React from 'react'
+import React from 'react';
 import ServiceCard from '../Components/ServiceCard';
 import Navbar from '../Components/Navbar';
-import exploreVideo from '../assets/exploreVideo.mp4'
-import arrow1 from '../assets/arrow.webp'
+import exploreVideo from '../assets/exploreVideo.mp4';
+import arrow1 from '../assets/arrow.webp';
 import ReviewComponent from '../Components/ReviewComponent';
 import Footer from '../Components/Footer';
 import FAQ from '../Components/faq';
@@ -40,38 +40,38 @@ export default function Home() {
             {/* Services Section */}
             <section className='our-services-section w-full h-fit bg-gray-100 py-10'>
                 <h2 className='text-2xl text-center font-semibold mb-5'>Our Services</h2>
-                <div className='flex flex-wrap justify-center gap-5 px-5'>
-                    {services.map((v, i) => (
-                        <ServiceCard key={i} name={v.serviceName} desc={v.serviceDesc} image={v.image} />
-                    ))}
+                <div className='overflow-x-auto sm:overflow-hidden flex sm:justify-center scrollbar-hide'>
+                    <div className='flex flex-nowrap sm:animate-marquee gap-5 p-5'>
+                        {services.map((v, i) => (
+                            <ServiceCard key={i} name={v.serviceName} desc={v.serviceDesc} image={v.image} />
+                        ))}
+                    </div>
                 </div>
             </section>
 
             {/* Partners Section */}
             <section className='partners-section w-full bg-white py-10'>
                 <h2 className='text-2xl text-center font-semibold mb-5'>Our Partners</h2>
-                <div className='flex flex-wrap justify-center gap-5 px-5'>
-                    <ServiceCard />
-                    <ServiceCard />
-                    <ServiceCard />
-                    <ServiceCard />
-                    <ServiceCard />
+                <div className='overflow-x-auto sm:overflow-hidden flex sm:justify-center scrollbar-hide'>
+                    <div className='flex flex-nowrap sm:animate-marquee gap-5 p-5'>
+                        <ServiceCard />
+                        <ServiceCard />
+                        <ServiceCard />
+                        <ServiceCard />
+                        <ServiceCard />
+                    </div>
                 </div>
             </section>
 
             {/* Video Section */}
-            <section className='vid-section w-full sm:h-[500px] bg-[#F3CCE7] flex flex-col sm:flex-row items-center px-5 sm:px-40 py-10 sm:py-20 relative'>
-
-                {/* Left Text Section */}
+            <section className='vid-section w-full sm:h-[500px] bg-[#F3CCE7] flex flex-col sm:flex-row items-center px-5 sm:px-40 py-10 sm:py-20'>
                 <div className='vid-left w-full sm:w-[55%] bg-transparent p-3 text-center sm:text-left relative'>
                     <h1 className='text-3xl sm:text-4xl font-bold'>Hit Play to Know Our World</h1>
                     <p className='my-5 font-medium text-wrap'>
                         Explore the world of WorkForce. Know how we are transforming the freelancing industry and contractual work culture across the nation. Watch now to see the magic unfold.
                     </p>
-                    <img src={arrow1} className='hidden sm:block w-16 sm:w-24 absolute bottom-[-20px] left-[50%] sm:left-[35%] transform -translate-x-1/2 rotate-[15deg]' />
+                    <img src={arrow1} className='hidden sm:block w-16 sm:w-24 absolute -bottom-10 left-[50%] transform -translate-x-1/2 rotate-[15deg]' />
                 </div>
-
-                {/* Right Video Section */}
                 <div className='vid-right w-full sm:w-[45%] bg-transparent p-0 flex justify-center'>
                     <video src={exploreVideo} controls className='w-[90%] sm:w-full h-auto rounded-xl' />
                 </div>
@@ -92,5 +92,5 @@ export default function Home() {
             <FAQ />
             <Footer />
         </>
-    )
+    );
 }
