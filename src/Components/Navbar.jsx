@@ -41,7 +41,7 @@ const Navbar = () => {
 
           {/* Menu Items - Centered */}
           <div className='flex flex-col items-center justify-center h-full gap-6'>
-            <a href="#" className="text-2xl text-blue-500 hover:underline">Link 1</a>
+            <a href={'/contract'} className="text-2xl text-blue-500 hover:underline">Contract Gen</a>
             <a href="#" className="text-2xl text-blue-500 hover:underline">Link 2</a>
             <a href="#" className="text-2xl text-blue-500 hover:underline">Link 3</a>
             <a href="#" className="text-2xl text-blue-500 hover:underline">Link 4</a>
@@ -52,7 +52,7 @@ const Navbar = () => {
 
       {/* Desktop menu */}
       <div className="hidden sm:flex flex-row items-center text-xl gap-5">
-        <a href={'/dash'} className="text-blue-500 hover:underline">Link 1</a>
+        <a href={'/contract'} className="text-blue-500 hover:underline">Contract Gen</a>
         <a href="#" className="text-blue-500 hover:underline">Link 2</a>
         <a href="#" className="text-blue-500 hover:underline">Link 3</a>
         <a href="#" className="text-2xl text-blue-500 hover:underline">Link 4</a>

@@ -1,5 +1,5 @@
 import React from 'react'
-import SocialCard from '../Components/ServiceCard'
+import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa";
 import Logo from '../Components/Logo'
 // small change
 
@@ -9,7 +9,7 @@ export default function Footer() {
     <footer className='footer relative bottom-0 bg-[#F5F3ED] p-5 pb-5'>
       <div className='foot-left flex flex-col pt-5 pl-10'>
         {/* <a className='text-3xl text-black'>WorkForce</a> */}
-        <Logo/>
+        <Logo />
         <div className='foot-links flex sm:flex-row flex-col p-5 justify-between text-xl'>
           <div className='flex sm:flex-row flex-col'>
 
@@ -34,8 +34,13 @@ export default function Footer() {
               <h2 className='font-white font-bold my-2'>Email</h2>
               <p className='mb-5'>info@workforce.in</p>
 
-              
-              <SocialCard/>
+
+              <div className="flex justify-center gap-6 mt-4">
+                <FaFacebook className="text-white text-2xl hover:text-blue-400 transition-all cursor-pointer" />
+                <FaTwitter className="text-white text-2xl hover:text-blue-300 transition-all cursor-pointer" />
+                <FaInstagram className="text-white text-2xl hover:text-pink-500 transition-all cursor-pointer" />
+                <FaLinkedin className="text-white text-2xl hover:text-blue-600 transition-all cursor-pointer" />
+              </div>
             </div>
           </div>
           {/* set a dark bg color which is your primary color */}

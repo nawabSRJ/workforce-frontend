@@ -34,7 +34,7 @@ function App() {
         auth 
         ? 
         (
-          <ClientDash setAuth={setAuth} />
+          <ClientDash setAuth={setAuth} /> 
         )
           : (
             <Home />

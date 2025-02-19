@@ -5,6 +5,7 @@ import exploreVideo from '../assets/exploreVideo.mp4'
 import arrow1 from '../assets/arrow.webp'
 import ReviewComponent from '../Components/ReviewComponent';
 import Footer from '../Components/Footer';
+import FAQ from '../Components/faq';
 import { services } from '../Data/Services';
 // small change
 
@@ -38,14 +39,15 @@ export default function Home() {
             <br></br>
             <br></br>
             <br></br>
+
             {/* Service Cards Section */}
             <section className='our-services-section w-full h-fit'>
-                <div className='services-marquee overflow-x-auto whitespace-nowrap bg-gray-100 '>
+                <div className='services-marquee overflow-x-auto whitespace-nowrap bg-white-100 '>
                     <div className="animate-marquee flex flex-row gap-5 sm:p-5 flex-nowrap">
                         {
                             services.map((v, i) => {
                                 return (
-                                    <ServiceCard key={i} name={v.serviceName} desc={v.serviceDesc} />
+                                     <ServiceCard key={i} name={v.serviceName} desc={v.serviceDesc} image={v.image} />
                                 )
                             })
                         }
@@ -69,6 +71,7 @@ export default function Home() {
                 <br></br>
             </section>
 
+            {/* video section */}
             <section className='vid-section w-1/1 sm:h-[500px] bg-[#F3CCE7] flex sm:flex-row flex-col sm:px-40 px-5 sm:py-20 py-10 '>
 
                 <div className='vid-left w-[55%] bg-transparent m-1 p-3'>
@@ -84,7 +87,7 @@ export default function Home() {
             <br></br>
 
             <section className='testimonial-section w-1/1 sm:h-[600px] bg-slate-100'>
-                <h1 className='text-2xl text-center pt-4 font-semibold'>Our happy Customers</h1>
+                <h1 className='text-3xl text-center pt-4 font-semibold'>Our happy Customers</h1>
                 <div className='reviews-div px-10 py-20 flex flex-row flex-wrap gap-5 bg-slate-100 w-[90%] mx-auto'>
                     {/* pic name msg in props */}
                     <ReviewComponent />
@@ -95,7 +98,7 @@ export default function Home() {
                     <ReviewComponent />
                 </div>
             </section>
-
+            <FAQ />
             <Footer />
         </>
     )
