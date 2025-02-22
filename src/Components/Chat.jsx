@@ -1,7 +1,7 @@
-// Chat.jsx (Frontend)
 import React, { useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
+import { Search, Send, ChevronLeft, Users } from 'lucide-react';
 // Import the mock data (remove in production)
 import { chats as mockChats } from '../Data/chats';
 import { messages as mockMessages } from '../Data/messages';
@@ -89,36 +89,66 @@ export default function Chat({ user, receiver }) {
     };
 
     return (
-        <div className="h-[calc(100vh-0.5rem)] -mx-6 -mt-6 flex bg-[#0c1317] md:flex-row flex-col">
+        <div className="h-[calc(100vh-0.5rem)] -mx-6 -mt-6 flex bg-gray-900 md:flex-row flex-col">
             {/* Chat List */}
-            <div className={`sm:w-1/3 w-1/1 min-w-[320px] bg-[#111b21] border-r border-gray-700 flex flex-col md:block ${isMobileChatOpen ? 'hidden' : 'block'}`}>
-                <div className="p-4 border-b border-gray-700">
-                    <h2 className="text-white text-2xl font-bold">My Chats</h2>
+            {/* <div className={`sm:w-1/3 w-full min-w-[320px] bg-gray-800 border-r border-gray-700 flex flex-col md:block ${isMobileChatOpen ? 'hidden' : 'block'}`}>
+                <div className="p-4 border-b border-gray-700 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <h2 className="text-white text-xl font-bold">My Chats</h2>
+                        <Users className="w-5 h-5 text-gray-400" />
+                    </div>
+                    <div className="relative">
+                        <Search className="absolute left-3 top-2.5 w-5 h-5 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search chats..."
+                            className="w-full pl-10 pr-4 py-2 bg-gray-700 text-white rounded-lg border-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
                 </div>
-                <div className="overflow-y-auto flex-1 cursor-pointer">
+                <div className="overflow-y-auto flex-1">
                     {chats.map(chat => (
                         <div 
                             key={chat.id} 
-                            className={`p-4 cursor-pointer border-b border-gray-700 ${
-                                activeChat?.id === chat.id ? 'bg-[#202c33]' : 'hover:bg-[#2a3942]'
+                            className={`p-4 cursor-pointer border-b border-gray-700 hover:bg-gray-700 ${
+                                activeChat?.id === chat.id ? 'bg-gray-700' : ''
                             }`}
                             onClick={() => {
                                 setActiveChat(chat);
                                 setIsMobileChatOpen(true);
                             }}
                         >
-                            <div className="text-white font-medium cursor-pointer">{chat.name}</div>
-                            <div className="text-gray-400 text-sm truncate">{chat.lastMessage}</div>
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                                    <span className="text-white font-medium">{chat.name.charAt(0)}</span>
+                                </div>
+                                <div className="flex-1">
+                                    <div className="text-white font-medium">{chat.name}</div>
+                                    <div className="text-gray-400 text-sm truncate">{chat.lastMessage}</div>
+                                </div>
+                            </div>
                         </div>
                     ))}
                 </div>
-            </div>
+            </div> */}
 
             {/* Chat Messages */}
-            <div className={`flex-1 flex flex-col bg-[#202c33] ${isMobileChatOpen ? 'block' : 'hidden'} md:block`}>
-                <div className="p-4 bg-[#111b21] border-b border-gray-700 flex justify-between items-center">
-                    <h2 className="text-white font-bold">{activeChat?.name || "Select a chat"}</h2>
-                    <button className="md:hidden text-white" onClick={() => setIsMobileChatOpen(false)}>Back</button>
+            <div className={`flex-1 flex flex-col bg-gray-900 ${isMobileChatOpen ? 'block' : 'hidden'} md:block`}>
+                <div className="p-4 bg-gray-800 border-b border-gray-700 flex items-center gap-4">
+                    <button 
+                        className="md:hidden text-gray-400 hover:text-white" 
+                        onClick={() => setIsMobileChatOpen(false)}
+                    >
+                        <ChevronLeft className="w-6 h-6" />
+                    </button>
+                    {activeChat && (
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                                <span className="text-white font-medium">{activeChat.name.charAt(0)}</span>
+                            </div>
+                            <h2 className="text-white font-bold">{activeChat.name}</h2>
+                        </div>
+                    )}
                 </div>
                 
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -129,8 +159,8 @@ export default function Chat({ user, receiver }) {
                         >
                             <div className={`p-3 rounded-lg max-w-[75%] ${
                                 msg.senderId === user.id 
-                                    ? 'bg-green-600 text-white' 
-                                    : 'bg-[#2a3942] text-white'
+                                    ? 'bg-blue-600 text-white' 
+                                    : 'bg-gray-700 text-white'
                             }`}>
                                 {msg.message}
                             </div>
@@ -138,20 +168,21 @@ export default function Chat({ user, receiver }) {
                     ))}
                 </div>
 
-                <div className="p-4 bg-gray-800 flex items-center sticky bottom-0 w-full">
+                <div className="p-4 bg-gray-800 border-t border-gray-700">
                     <form onSubmit={sendMessage} className="flex gap-2">
                         <input
                             type="text"
-                            className="flex-1 p-3 rounded-lg bg-[#2a3942] text-white border-none focus:ring-2 focus:ring-green-500"
+                            className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg border-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Type a message..."
                             value={newMessage}
                             onChange={(e) => setNewMessage(e.target.value)}
                         />
                         <button 
                             type="submit"
-                            className="px-6 py-3 cursor-pointer bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
                         >
-                            Send
+                            <Send className="w-5 h-5" />
+                            <span className="hidden sm:inline">Send</span>
                         </button>
                     </form>
                 </div>

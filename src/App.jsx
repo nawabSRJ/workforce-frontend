@@ -1,45 +1,33 @@
 import React, { useState,useEffect } from 'react';
 import './index.css'
-import ClientDash from './pages/ClientDash';
 import Home from './pages/Home';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 // small change
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [auth, setAuth] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
-  useEffect(() => {
-    axios.get('http://localhost:8000/', { withCredentials: true })
-      .then(res => {
-        if (res.data.status === "Success") {
-          setAuth(true);
-          
-        } else {
-          setAuth(false);
-          
+
+    useEffect(() => {
+        const token = localStorage.getItem("token");
+
+        if (token) {
+            axios.post("http://localhost:8080/verifyToken", { token })
+                .then(res => {
+                    if (res.data.status === "ok") {
+                        navigate("/client-dash");
+                    }
+                });
         }
-      })
-      .catch(err => {
-        console.log(err);
-        setAuth(false);
-      });
-  }, []);
+    }, [navigate]);
 
   return (
     <div>
-      {
-        auth 
-        ? 
-        (
-          <ClientDash setAuth={setAuth} /> 
-        )
-          : (
-            <Home />
-          )
-      }
+      <Home/>
     </div>
   );
 }

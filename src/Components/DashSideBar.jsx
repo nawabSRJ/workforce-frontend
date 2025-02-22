@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 // small change
 
-export default function DashSideBar({ select, setSelect, setAuth }) {
+export default function DashSideBar({ select, setSelect}) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -14,37 +14,29 @@ export default function DashSideBar({ select, setSelect, setAuth }) {
   const navigate = useNavigate();
 
   // DashSideBar.jsx - improved handleLogout
-const handleLogout = () => {
-  axios.post('http://localhost:8000/client-logout', {}, { withCredentials: true })
-      .then(res => {
-          if (res.data.status === "Success") {
-              setAuth(false);
-              navigate('/');
-          } else {
-              console.error('Logout failed:', res.data);
-          }
-      })
-      .catch(err => {
-          console.error('Logout error:', err);
-          // Optionally show an error message to the user
-      });
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
 };
+
 
   return (
     <>
       {/* Mobile Toggle Button */}
-      <div className="sm:hidden fixed top-4 left-4 z-50">
+      <div className="sm:hidden fixed top-3 right-7 z-50">
         {!isMobileMenuOpen ? (
-          <Menu onClick={toggleMobileMenu} className="text-black cursor-pointer" size={28} />
+          <Menu onClick={toggleMobileMenu} className="text-blue-500 cursor-pointer" size={28} />
         ) : (
-          <X onClick={toggleMobileMenu} className="text-black cursor-pointer" size={28} />
+          <X onClick={toggleMobileMenu} className="text-blue-500 cursor-pointer" size={28} />
         )}
       </div>
 
       {/* Sidebar */}
       <div
-        className={`w-48 bg-blue-600 min-h-screen fixed left-0 top-0 transition-transform sm:translate-x-0 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-          } sm:block z-40`}
+        className={`w-48 bg-blue-600 min-h-screen fixed left-0 top-0 transition-transform sm:translate-x-0 ${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } sm:block z-40`}
+        style={{ width: '200px' }}
       >
         <div className="p-4">
           <div className="bg-white rounded p-2 mb-8">

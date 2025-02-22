@@ -8,7 +8,7 @@ import Chat from '../Components/Chat';
 import Inbox from '../Components/Inbox';
 // small change
 
-export default function ClientDash({setAuth}) {
+export default function ClientDash() {
     const [select, setSelect] = useState('Home'); // for state of DashSideBar tabs
     const user = { id: "1", name: "User1" };
     const receiver = { id: "2", name: "User2" };
@@ -24,12 +24,12 @@ export default function ClientDash({setAuth}) {
 
 
             {/* Pass select and setSelect as props */}
-            <DashSideBar select={select} setSelect={setSelect} setAuth={setAuth} />
+            <DashSideBar select={select} setSelect={setSelect}  />
 
 
             {/* Project Cards : when select is 'Projects' */}
             {select === 'Projects' && (
-                <div className="grid md:grid-cols-2 gap-6">
+                <div className="grid md:grid-cols-2 gap-6 mt-4">
                     {projects.map((project, index) => (
                         <ProjectsCard key={index} {...project} />
                     ))}

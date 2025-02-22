@@ -17,5 +17,41 @@ export const chats = [
         name: "Mike Johnson",
         lastMessage: "The project looks great",
         timestamp: "2024-02-18T08:45:00Z"
-    }
+    },
+    {
+        id: "5",
+        name: "Mike Johnson",
+        lastMessage: "The project looks great",
+        timestamp: "2024-02-18T08:45:00Z"
+    },
+    {
+        id: "6",
+        name: "Mike Johnson",
+        lastMessage: "The project looks great",
+        timestamp: "2024-02-18T08:45:00Z"
+    },
+    {
+        id: "7",
+        name: "Mike Johnson",
+        lastMessage: "The project looks great",
+        timestamp: "2024-02-18T08:45:00Z"
+    },
+    {
+        id: "8",
+        name: "Mike Johnson",
+        lastMessage: "The project looks great",
+        timestamp: "2024-02-18T08:45:00Z"
+    },
+    {
+        id: "9",
+        name: "Mike Johnson",
+        lastMessage: "The project looks great",
+        timestamp: "2024-02-18T08:45:00Z"
+    },
+    {
+        id: "10",
+        name: "Mike Johnson",
+        lastMessage: "The project looks great",
+        timestamp: "2024-02-18T08:45:00Z"
+    },
 ];

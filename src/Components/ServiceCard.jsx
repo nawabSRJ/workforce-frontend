@@ -15,7 +15,7 @@ export default function ServiceCard({ name, desc, image }) {
   },[])
   
   return (
-    <div className={`w-[180px] sm:w-[220px] min-h-[240px] sm:min-h-[280px] flex flex-col items-center ${bgCol} shadow-md hover:shadow-lg transition-all duration-300 border border-green-500 rounded-lg overflow-hidden p-3`}>
+    <div className={`w-[180px] sm:w-[220px] min-h-[240px] sm:min-h-[280px] flex flex-col items-center ${bgCol} shadow-md hover:shadow-lg transition-all duration-300 rounded-lg overflow-hidden p-3`}>
       
       {/* Service Image */}
       {image && (

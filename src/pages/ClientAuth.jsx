@@ -6,7 +6,7 @@ import axios from "axios";
 // small change
 
 export default function ClientAuth() {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
@@ -14,67 +14,65 @@ export default function ClientAuth() {
   const navigate = useNavigate();
 
   // handling submit
-  const handleSignIn = (e) => {
+  async function handleSignIn(e){
     e.preventDefault();
-    setLoading(true);
-    axios.post('http://localhost:8000/client-login', { email, password })
-      .then(result => {
-        console.log(result); // debugging
-        if (result.data.message === "Success") {
-          navigate('/client-dash', { state: { user: result.data.user } });
-          localStorage.setItem('logged', true)
-          setLoading(false);
-        } else if (result.data.message === "Not Found") {
-          setLoading(false); // stop loading
-          toast.error('Please Re-enter details. No Record Found :/');
+        const res = await axios.post("http://localhost:8000/client-login", { email, password });
+
+        if (res.data.status === "ok") {
+            localStorage.setItem("token", res.data.cli);
+            navigate("/client-dash");
+        } else {
+            alert("Invalid credentials");
         }
-      })
-      .catch(err => {
-        console.log(err);
-        setLoading(false);
-      })
   }; // handleSignIn over
 
   // Function to validate inputs
-  const validateInputs = () => {
-    const trimmedName = name.trim();
-    const hasMinTwoLetters = trimmedName.replace(/\s+/g, '').length >= 2;
-    const nameWords = trimmedName.split(/\s+/);
+  // const validateInputs = () => {
+  //   const trimmedName = name.trim();
+  //   const hasMinTwoLetters = trimmedName.replace(/\s+/g, '').length >= 2;
+  //   const nameWords = trimmedName.split(/\s+/);
   
-    if (nameWords.length < 2 || !hasMinTwoLetters) {
-      toast.error('Please enter a valid name with at least two alphanumeric characters and at least two words.');
-      return false;
-    }
+  //   if (nameWords.length < 2 || !hasMinTwoLetters) {
+  //     toast.error('Please enter a valid name with at least two alphanumeric characters and at least two words.');
+  //     return false;
+  //   }
   
-    if (password.length < 5) {
-      toast.error('Password must be at least 5 characters long.');
-      return false;
-    }
+  //   if (password.length < 5) {
+  //     toast.error('Password must be at least 5 characters long.');
+  //     return false;
+  //   }
   
-    if (email.trim().length === 0) {
-      toast.error('Email cannot be empty.');
-      return false;
-    }
+  //   if (email.trim().length === 0) {
+  //     toast.error('Email cannot be empty.');
+  //     return false;
+  //   }
   
-    return true;
-  };
+  //   return true;
+  // };
   
 
   // function to handle SignUp
-  const handleSignUp = (e) => {
+  async function handleSignUp(e) {
     e.preventDefault();
 
-    // Validate inputs before proceeding
-    if (!validateInputs()) {
-      return; // Exit if validation fails
+    const response = await fetch('http://localhost:8000/client-signup', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            name,
+            email,
+            password
+        }),
+    })
+
+    const data = await response.json();
+    if(data.status === 'ok'){
+        // navigate('/client-auth')
+        setIsSignUp(false)
     }
-    setLoading(true); // when the request starts -> set to true
-    axios.post('http://localhost:8000/client-signup', { name, email, password })
-      .then(result => {
-        console.log(result)
-        navigate('/client-dash')
-      })
-      .catch(err => console.log(err));
+    console.log(data);
   }
 
   return (
