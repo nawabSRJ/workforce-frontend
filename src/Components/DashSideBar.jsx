@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+
 // small change
 
 export default function DashSideBar({ select, setSelect}) {
