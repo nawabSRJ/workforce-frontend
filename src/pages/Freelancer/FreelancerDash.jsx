@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
-import ProjectsCard from '../Components/ProjectsCard';
-import FreelancerSideBar from '../Components/FreelancerSideBar';
-import { projects } from '../Data/projects';
-import Inbox from '../Components/Inbox';
-import Reminders from '../Components/Reminders';
+import ProjectsCard from '../../Components/ProjectsCard';
+import FreelancerSideBar from '../../Components/Freelancer/FreelancerSideBar';
+import { projects } from '../../Data/projects';
+import Inbox from '../../Components/Inbox';
+import Reminders from '../../Components/Freelancer/Reminders';
+import Todo from '@/Components/Freelancer/Todo';
 
 
 export default function FreelancerDash() {
@@ -42,6 +43,11 @@ export default function FreelancerDash() {
             {select === 'Reminders' && (
                 <div className="">
                     <Reminders />
+                </div>
+            )}
+            {select === 'Todo' && (
+                <div className="">
+                    <Todo />
                 </div>
             )}
         </div>

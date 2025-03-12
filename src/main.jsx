@@ -4,10 +4,10 @@ import './index.css';
 import App from './App';
 import ContractGen from './Components/ContractGen'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import ClientDash from './pages/ClientDash';
-import ClientAuth from './pages/ClientAuth';
-import FreelancerDash from './pages/FreelancerDash';
-import FreelancerAuth from './pages/FreelancerAuth';
+import ClientDash from './pages/Client/ClientDash';
+import ClientAuth from './pages/Client/ClientAuth';
+import FreelancerDash from './pages/Freelancer/FreelancerDash';
+import FreelancerAuth from './pages/Freelancer/FreelancerAuth';
 import ExplorePage from './pages/ExplorePage';
 import About from './Components/FooterLinks/About';
 import PrivacyPolicy from './Components/FooterLinks/PrivacyPolicy';
@@ -15,7 +15,8 @@ import Pricing from './Components/FooterLinks/Pricing';
 import Contact from './Components/Contact';
 import ForBusiness from './Components/FooterLinks/ForBusiness';
 import ForCustomers from './Components/FooterLinks/For Customers';
-import GetStarted from './Components/GetStarted';
+import GetStarted from './Components/FooterLinks/GetStarted';
+import NewProjectForm from './pages/Freelancer/NewProjectForm';
 
 
 
@@ -31,6 +32,7 @@ let allRoutes = createBrowserRouter(
             path:'/contract',
             element:<ContractGen/>
         },
+        // ? ------------------------ Client ------------------------
         {
           path:'/client-dash',
           element:<ClientDash/>
@@ -38,6 +40,7 @@ let allRoutes = createBrowserRouter(
           path:'/client-auth',
           element:<ClientAuth/>
         },
+        // ? ------------------------ Freelancer ------------------------
         {
           path:'/freelancer-auth',
           element:<FreelancerAuth/>
@@ -46,6 +49,12 @@ let allRoutes = createBrowserRouter(
           path:'/freelancer-dash',
           element:<FreelancerDash/>
         },
+        {
+          path:'/new-project',
+          element:<NewProjectForm/>
+        },
+
+        // ? ------------------------ Common ------------------------
         {
           path:'/explore',
           element:<ExplorePage/>

@@ -1,6 +1,8 @@
 import React from 'react'
-import { reminders } from '../Data/reminders'
+import { reminders } from '../../Data/reminders'
 import axios from 'axios'
+import { Button } from '../ui/button'
+import StatsContainer from '../ui/StatsContainer'
 // reminders component for freelancers
 export default function Reminders(props) {
 
@@ -10,7 +12,7 @@ export default function Reminders(props) {
         
         const newReminder = {
             username: "vaishnavi",
-            email: "vaishnaviawasthi760@gmail.com",
+            email: "srajan.saxena02@gmail.com",
             phone: "9838726101",
             title: "WorkForce Project Submission Deadline",
             message: "Reminder: Your project submission is due soon. hehe reminder app se mail bheja hai yeh :)",
@@ -23,7 +25,7 @@ export default function Reminders(props) {
 
     return (
         <div className='flex flex-col bg-gray-white'>
-            <div className="stats flex sm:flex-row items-center justify-around p-4 bg-gray-300">
+            {/* <div className="stats flex sm:flex-row items-center justify-around p-4 bg-gray-300">
                 <div className="stat-box w-[200px] h-[100px] bg-blue-500 text-white font-bold">
                     Stat 1
                 </div>
@@ -33,16 +35,21 @@ export default function Reminders(props) {
                 <div className="stat-box w-[200px] h-[100px] bg-blue-500 text-white font-bold">
                     Stat 3
                 </div>
-            </div>
+            </div> */}
+            <StatsContainer/>
 
             <div className="filters bg-gray-400 my-5 p-5">
-                <button
+                
+                <Button 
+                className='cursor-pointer'
                 onClick={addNewReminder} 
-                className='text-xl rounded-full bg-black text-white px-2 py-1 text-center cursor-pointer'>New Reminder</button>
+                >
+                    New Reminder
+                    </Button>
             </div>
             <div className="table">
 
-                <TableComponent />
+               <TableComponent/>
 
             </div>
         </div>
