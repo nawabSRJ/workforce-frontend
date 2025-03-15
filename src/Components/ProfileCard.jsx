@@ -33,7 +33,7 @@ export default function ProfileCard({name,description,tags,location}) {
               <div className="flex gap-3 mb-4">
                 <button className="flex items-center gap-2 cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-full text-sm font-medium transition hover:bg-blue-600">
                   <FaEnvelope />
-                  Contact
+                  Request Service
                 </button>
                 <button className="flex items-center gap-2 cursor-pointer border border-blue-500 text-blue-600 px-4 py-2 rounded-full text-sm font-medium transition hover:bg-blue-500 hover:text-white">
                   <FaUserPlus />

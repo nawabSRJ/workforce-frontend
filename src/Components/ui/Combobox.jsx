@@ -11,10 +11,10 @@ export default function Combobox({ options, value, onChange, placeholder = "Sele
     );
 
     return (
-        <div className="relative w-[200px] my-4">
+        <div className="relative w-[200px] my-4 text-white">
             {/* Button to toggle dropdown */}
             <button
-                className="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-gray-900 hover:bg-gray-100 hover:text-black focus:outline-none"
+                className="w-full flex items-center justify-between px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-gray-900  hover:bg-gray-100 hover:text-black focus:outline-none"
                 onClick={() => setOpen(!open)}
             >
                 {value ? options.find((option) => option.value === value)?.label : placeholder}

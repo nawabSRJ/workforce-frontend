@@ -16,7 +16,8 @@ import Contact from './Components/Contact';
 import ForBusiness from './Components/FooterLinks/ForBusiness';
 import ForCustomers from './Components/FooterLinks/For Customers';
 import GetStarted from './Components/FooterLinks/GetStarted';
-import NewProjectForm from './pages/Freelancer/NewProjectForm';
+import NewProjectForm from './pages/Client/NewProjectForm';
+import Logo from './Components/Logo';
 
 
 
@@ -86,6 +87,10 @@ let allRoutes = createBrowserRouter(
         {
           path:'/customer',
           element:<ForCustomers/>
+        },
+        {
+          path:'/test',
+          element:<Logo/>
         }
         
     ]
