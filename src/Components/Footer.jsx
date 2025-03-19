@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa"; // ✅ Import icons
-import Logo from '../Components/Logo';
+import Logo from './Logo';
 
 export default function Footer() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export default function Footer() {
           {/* Resources Section */}
           <div className="flex flex-col p-4 text-center sm:text-left">
             <h2 className="font-bold text-2xl mb-3">Resources</h2>
-            <a className="my-1 hover:text-green-900 transition-all" href="/privacypolicy">Privacy Policy</a>
+            <a className="my-1 hover:text-green-900 transition-all" href="/privacypolicy">Policies</a>
             <a className="my-1 hover:text-green-900 transition-all" href="/pricing">Pricing</a>
           </div>
         </div>

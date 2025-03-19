@@ -17,6 +17,12 @@ import ForBusiness from './Components/ForBusiness';
 import ForCustomers from './Components/ForCustomers';
 import FreelancerDashboard from './pages/FreelancerDashboard';
 import GetStarted from './Components/getstarted';
+import AdminDashboard from './pages/AdminDashboard';
+import Orders from './Components/Orders';
+import Reports from './Components/Reports';
+import Settings from './Components/Settings';
+import Users from './Components/Users';
+import AdminAuth from './pages/AdminAuth';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 let allRoutes = createBrowserRouter(
@@ -54,6 +60,10 @@ let allRoutes = createBrowserRouter(
           element:<FreelancerDashboard/>
         },
         {
+          path:'/admin-auth',
+          element:<AdminAuth/>
+        },
+        {
           path:'/about',
           element:<About/>
         },
@@ -80,6 +90,26 @@ let allRoutes = createBrowserRouter(
         {
           path:'/customer',
           element:<ForCustomers/>
+        },
+        {
+          path:'/admin-dash',
+          element:<AdminDashboard/>
+        },
+        {
+          path:'/orders',
+          element:<Orders/>
+        },
+        {
+          path:'/reports',
+          element:<Reports/>
+        },
+        {
+          path:'/settings',
+          element:<Settings/>
+        },
+        {
+          path:'/users',
+          element:<Users/>
         }
         
 
