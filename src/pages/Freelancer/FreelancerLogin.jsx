@@ -47,7 +47,8 @@ export default function FreelancerLogin({ switchToSignUp }) {
         // Store user data in localStorage
         localStorage.setItem('freelancerToken', response.data.freelancer);
         localStorage.setItem('userData', JSON.stringify(response.data.user));
-        localStorage.setItem('logged', true);
+        localStorage.setItem("logged", JSON.stringify({ role: "freelancer" }));
+
         
         // Navigate to dashboard
         setTimeout(() => {

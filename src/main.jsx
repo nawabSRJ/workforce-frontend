@@ -18,6 +18,7 @@ import ForCustomers from './Components/FooterLinks/For Customers';
 import GetStarted from './Components/FooterLinks/GetStarted';
 import NewProjectForm from './pages/Client/NewProjectForm';
 import Logo from './Components/Logo';
+import Protected from './pages/Protected';
 
 
 
@@ -36,8 +37,10 @@ let allRoutes = createBrowserRouter(
         // ? ------------------------ Client ------------------------
         {
           path:'/client-dash',
-          element:<ClientDash/>
-        },{
+          element:<Protected/>,
+          children: [{ path: '', element: <ClientDash /> }]
+        },
+        {
           path:'/client-auth',
           element:<ClientAuth/>
         },
@@ -48,7 +51,8 @@ let allRoutes = createBrowserRouter(
         },
         {
           path:'/freelancer-dash',
-          element:<FreelancerDash/>
+          element:<Protected/>,
+          children: [{ path: '', element: <FreelancerDash /> }]
         },
         {
           path:'/new-project',

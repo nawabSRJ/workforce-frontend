@@ -20,6 +20,7 @@ export default function ClientAuth() {
 
         if (res.data.status === "ok") {
             localStorage.setItem("token", res.data.cli);
+            localStorage.setItem("logged", JSON.stringify({ role: "client" }));
             navigate("/client-dash");
         } else {
             alert("Invalid credentials");

@@ -14,6 +14,7 @@ export default function FreelancerSideBar({select,setSelect}) {
     // DashSideBar.jsx - improved handleLogout
     const handleLogout = () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("logged");
         navigate("/");
     };
 
