@@ -1,119 +1,60 @@
-import React from 'react'
-import ServiceCard from '../Components/ServiceCard';
-import Navbar from '../Components/Navbar';
-import exploreVideo from '../assets/exploreVideo.mp4'
-import arrow1 from '../assets/arrow.webp'
-import ReviewComponent from '../Components/ReviewComponent';
-import Footer from '../Components/Footer';
-import FAQ from '../Components/faq';
-import { services } from '../Data/Services';
-import cmplogo from '../assets/image.png'
-import { useNavigate } from "react-router-dom";
-// small change
+import React from 'react'; import ServiceCard from '../Components/ServiceCard'; import Navbar from '../Components/Navbar'; import exploreVideo from '../assets/exploreVideo.mp4'; import arrow1 from '../assets/arrow.webp'; import ReviewComponent from '../Components/ReviewComponent'; import Footer from '../Components/Footer'; import FAQ from '../Components/faq'; import { services } from '../Data/Services'; import { Link } from 'react-router-dom';
 
-export default function Home() {
-     const navigate = useNavigate();
-    
-    return (
-        <>{/* Navbar */}
-            <Navbar />
-            {/* Hero Section */}
-            <section className='hero w-full h-fit mt-10 px-5'>
-                <h1 className='text-xl sm:text-3xl text-center mx-auto mt-2 mb-3 font-thin'>
-                    Hire the Best Professionals
-                </h1>
-                <h1 className='text-2xl sm:text-5xl text-center mx-auto my-3 font-bold'>
-                    Get the Job DONE ASAP
-                </h1>
-                <p className='info text-md text-center font-serif w-full sm:w-[55%] mx-auto mt-7 text-wrap'>
-                    At <b>WorkForce</b> we are revolutionising the contract-based gig worker industry with a platform to connect you with skilled professionals.
-                </p>
+export default function Home() { return ( <div className='bg-[#0D0D0D] text-white font-sans'> {/* Navbar */} <Navbar />
 
-                <div className='heroBtns mx-auto text-center my-7'>
-                    <button 
-                    onClick={() => navigate("/get-started")}
-                    className='bg-black text-white text-xl text-center px-4 py-2 rounded-full m-3'>
-                        Get Started
-                    </button>
-                    <button
-            onClick={() => navigate("/contact")}
-            className="bg-black text-white text-xl text-center px-4 py-2 rounded-full m-3"
-          >
-            Contact Us
-          </button>
-                </div>
-            </section>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
-            <br></br>
+{/* Hero Section */}
+        <section className='hero w-full h-screen flex flex-col justify-center items-center text-center px-5'>
+            <h1 className='text-2xl sm:text-4xl font-light tracking-wider'>Hire the Best Professionals</h1>
+            <h1 className='text-4xl sm:text-6xl font-extrabold mt-2 gradient-text'>Get the Job DONE ASAP</h1>
+            <p className='text-lg sm:text-xl font-light mt-4 sm:w-2/3'>
+                At <b>WorkForce</b>, we revolutionize the gig economy by connecting you with skilled professionals seamlessly and efficiently.
+            </p>
+            <div className='flex gap-5 mt-6'>
+                <Link to="/get-started">
+                    <button className='px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-full text-lg font-medium hover:opacity-90 transition'>Get Started</button>
+                </Link>
+                <Link to="/contact">
+                    <button className='px-6 py-3 border border-white rounded-full text-lg font-medium hover:bg-white hover:text-black transition'>Contact Us</button>
+                </Link>
+            </div>
+        </section>
 
-            {/* Service Cards Section */}
-            <section className='our-services-section w-full h-fit'>
-                <div className='services-marquee overflow-x-auto whitespace-nowrap bg-white-100 '>
-                    <div className="animate-marquee flex flex-row gap-5 sm:p-5 flex-nowrap">
-                        {
-                            services.map((v, i) => {
-                                return (
-                                     <ServiceCard key={i} name={v.serviceName} desc={v.serviceDesc} image={v.image} />
-                                )
-                            })
-                        }
+        {/* Service Cards Section */}
+        <section className='py-20'>
+            <h2 className='text-center text-3xl font-semibold mb-10'>Our Services</h2>
+            <div className='flex overflow-x-auto space-x-5 px-5 scrollbar-hide'>
+                {services.map((v, i) => (
+                    <ServiceCard key={i} name={v.serviceName} desc={v.serviceDesc} image={v.image} />
+                ))}
+            </div>
+        </section>
 
-                    </div>
-                </div>
-                <br></br>
-                <br></br>
-                <div className='w-[70%] bg-white-300 mx-auto'>
-                    <h1 className='text-center text-black text-2xl font-semibold my-5 mx-auto '>Our Partners</h1>
-                    <div className='partners-marquee overflow-x-auto whitespace-nowrap bg-white-100 '>
-                        <div className="animate-marquee flex flex-row gap-5 sm:p-5 flex-nowrap">
-                            {/* <ServiceCard />
-                            
-                            <ServiceCard />
-                            <ServiceCard />
-                            <ServiceCard />
-                            <ServiceCard /> */}
-                            <img src={cmplogo} alt="" width={400} height={400} />
-                            <img src={cmplogo} alt="" width={400} height={400} />
-                            <img src={cmplogo} alt="" width={400} height={400} />
-                            <img src={cmplogo} alt="" width={400} height={400} />
-                        </div>
-                    </div>
-                </div>
-                <br></br>
-            </section>
+        {/* Video Section */}
+        <section className='flex flex-col sm:flex-row items-center bg-gray-900 px-10 py-16'>
+            <div className='sm:w-1/2 text-center sm:text-left'>
+                <h2 className='text-4xl font-bold mb-4'>Discover Our World</h2>
+                <p className='text-lg font-light mb-5'>See how we are transforming freelancing and contract work nationwide.</p>
+                <img src={arrow1} alt='arrow' className='hidden sm:block w-32' />
+            </div>
+            <div className='sm:w-1/2'>
+                <video src={exploreVideo} controls className='rounded-xl w-full' />
+            </div>
+        </section>
 
-            {/* video section */}
-            <section className='vid-section w-1/1 sm:h-[500px] bg-[#F3CCE7] flex sm:flex-row flex-col sm:px-40 px-5 sm:py-20 py-10 '>
+        {/* Testimonials */}
+        <section className='py-20 bg-gray-800'>
+            <h2 className='text-center text-3xl font-semibold mb-10'>Our Happy Customers</h2>
+            <div className='flex flex-wrap justify-center gap-6 px-5'>
+                <ReviewComponent />
+                <ReviewComponent />
+                <ReviewComponent />
+            </div>
+        </section>
 
-                <div className='vid-left w-[55%] bg-transparent m-1 p-3'>
-                    <h1 className='text-4xl font-bold'>Hit Play to know our World</h1>
-                    <p className='my-5 font-medium z-10 absolute text-wrap'>Explore the world of WorkForce. Know how we are transforming the <br></br> freelancing  industry and contractual work culture across the <br></br> nation. Watch now to see the magic unfold</p>
-                    <img src={arrow1} className=' relative -top-0 left-0 h-3/3 w-5/5 bg-transparent z-0' />
-                </div>
-                <div className='vid-right w-[45%] bg-transparent m-1 p-0 '>
-                    <video src={exploreVideo} controls={true} className='w-1/1 h-1/1 rounded-xl' />
-                </div>
-            </section>
-            <br></br>
-            <br></br>
+        {/* FAQ & Footer */}
+        <FAQ />
+        <Footer />
+    </div>
+);
 
-            <section className='testimonial-section w-1/1 sm:h-[600px] bg-slate-100'>
-                <h1 className='text-3xl text-center pt-4 font-semibold'>Our happy Customers</h1>
-                <div className='reviews-div px-10 py-20 flex flex-row flex-wrap gap-5 bg-slate-100 w-[90%] mx-auto'>
-                    {/* pic name msg in props */}
-                    <ReviewComponent />
-                    <ReviewComponent />
-                    <ReviewComponent />
-                    <ReviewComponent />
-                    <ReviewComponent />
-                    <ReviewComponent />
-                </div>
-            </section>
-            <FAQ />
-            <Footer />
-        </>
-    )
 }
