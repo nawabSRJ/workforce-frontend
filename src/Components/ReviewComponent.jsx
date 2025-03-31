@@ -1,8 +1,8 @@
 import React from 'react'
 import { motion } from 'framer-motion'
-import pic from '../assets/profilePic1.webp'
+// import pic from '../assets/profilePic1.webp'
 
-const ReviewComponent = () => {
+const ReviewComponent = ({name,text,profilePic}) => {
   return (
     <motion.div 
       whileHover={{ scale: 1.03 }}
@@ -11,10 +11,10 @@ const ReviewComponent = () => {
       <div className="p-6">
         <div className="flex items-center gap-4 mb-4">
           <div className="w-14 h-14 rounded-full overflow-hidden border-2 border-white shadow-md">
-            <img src={pic} className="w-full h-full object-cover" alt="Profile" />
+            <img src={profilePic} className="w-full h-full object-cover" alt="Profile" />
           </div>
           <div>
-            <h3 className="font-bold text-lg text-gray-800">Sarah Johnson</h3>
+            <h3 className="font-bold text-lg text-gray-800">{name}</h3>
             <div className="flex gap-1 mt-1">
               {[...Array(5)].map((_, i) => (
                 <svg key={i} className="w-4 h-4 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
@@ -25,7 +25,7 @@ const ReviewComponent = () => {
           </div>
         </div>
         <p className="text-gray-600 italic">
-          "WorkForce completely transformed how we hire contractors. The quality of professionals is outstanding and the platform is so easy to use. We've completed 12 projects through WorkForce this quarter alone!"
+          {text}
         </p>
       </div>
     </motion.div>

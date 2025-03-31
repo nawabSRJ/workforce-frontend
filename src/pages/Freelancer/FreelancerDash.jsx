@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import ProjectsCard from '../../Components/ProjectsCard';
 import FreelancerSideBar from '../../Components/Freelancer/FreelancerSideBar';
 import { projects } from '../../Data/projects';
-import Inbox from '../../Components/Inbox';
+import Inbox from '../../Components/Chat System/Inbox';
 import Reminders from '../../Components/Freelancer/Reminders';
 import Todo from '@/Components/Freelancer/Todo';
 import FreelancerHome from '@/Components/Freelancer/FreelancerHome';

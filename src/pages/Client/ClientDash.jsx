@@ -4,7 +4,7 @@ import DashSideBar from '../../Components/DashSideBar';
 import ProjectsCard from '../../Components/ProjectsCard';
 import { useState } from 'react';
 import { projects } from '../../Data/projects';
-import Inbox from '../../Components/Inbox';
+import Inbox from '../../Components/Chat System/Inbox';
 import { Button } from '@/Components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import ClientHome from '../../Components/Client/ClientHome';

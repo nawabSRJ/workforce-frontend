@@ -3,6 +3,11 @@ import { io } from 'socket.io-client';
 import axios from 'axios';
 import { ChevronLeft, Send, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import OrderMessageCard from './OrderMessageCard';
+import OrderInitiationModal from './OrderInitiationModal';
+import ChatActionMenu from './ChatActionMenu';
+import { handleGeminiRequest } from './geminiService';
+import AITagHighlighter from './AITagHighlighter';
 
 const socket = io("http://localhost:8000", {
     autoConnect: false,
@@ -18,10 +23,11 @@ export default function Inbox({ user }) {
     const [chatUsers, setChatUsers] = useState({});
     const [loading, setLoading] = useState(true);
     const [sending, setSending] = useState(false);
+    const [showOrderModal, setShowOrderModal] = useState(false);
+    const [orderMessage, setOrderMessage] = useState(null);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
 
-    // Scroll to bottom of messages
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
@@ -30,7 +36,6 @@ export default function Inbox({ user }) {
         scrollToBottom();
     }, [messages, activeChat]);
 
-    // Handle socket reconnections
     useEffect(() => {
         const handleReconnect = () => {
             console.log("Socket reconnected, rejoining room");
@@ -46,34 +51,27 @@ export default function Inbox({ user }) {
         };
     }, [user?.id]);
 
-    // Socket connection and message handling
     useEffect(() => {
         if (!user?.id) return;
 
         console.log("Connecting socket for user:", user.id);
         
-        // Make sure socket is connected
         if (!socket.connected) {
             socket.connect();
         }
 
-        // Join user's room
         socket.emit("joinUser", user.id);
         
-        // Clear any existing listeners to prevent duplicates
         socket.off("receiveMessage");
 
-        // Set up message listener
         socket.on("receiveMessage", (message) => {
             console.log("Received message via socket:", message);
             
-            // Update messages if this is the active chat
             if (activeChat && 
                 ((message.senderId === activeChat._id && message.receiverId === user.id) || 
                  (message.receiverId === activeChat._id && message.senderId === user.id))) {
                 
                 setMessages(prev => {
-                    // Check if we already have this message (prevents duplicates)
                     const exists = prev.some(m => 
                         (m._id === message._id) || 
                         (m._id.toString().startsWith('temp-'))
@@ -88,7 +86,6 @@ export default function Inbox({ user }) {
                 scrollToBottom();
             }
             
-            // Always refresh chat list to show latest messages
             fetchChats();
         });
 
@@ -103,7 +100,6 @@ export default function Inbox({ user }) {
         };
     }, [user?.id, activeChat]);
 
-    // Fetch all chats for the user
     const fetchChats = async () => {
         try {
             setLoading(true);
@@ -122,7 +118,6 @@ export default function Inbox({ user }) {
             if (res.data && Array.isArray(res.data)) {
                 console.log("Received chats:", res.data);
                 
-                // Check if the chat data is in the expected format
                 if (res.data.length > 0) {
                     const sampleChat = res.data[0];
                     console.log("Sample chat structure:", JSON.stringify(sampleChat));
@@ -132,7 +127,6 @@ export default function Inbox({ user }) {
                 
                 setChats(res.data);
                 
-                // Fetch user details for each chat
                 const userDetailsPromises = res.data.map(async (chat) => {
                     try {
                         const endpoint = chat.userType === 'Freelancer' 
@@ -173,7 +167,6 @@ export default function Inbox({ user }) {
         fetchChats();
     }, [user?.id]);
 
-    // Fetch messages for a specific chat
     const fetchMessages = async (chatId) => {
         try {
             console.log(`Fetching messages between ${user.id} and ${chatId}`);
@@ -197,8 +190,60 @@ export default function Inbox({ user }) {
         fetchMessages(chat._id);
     };
 
+    const handleInitiateOrder = () => {
+        setShowOrderModal(true);
+    };
+
+    const handleSendOrder = async (orderData) => {
+        setSending(true);
+        
+        try {
+            const tempId = 'temp-' + Date.now().toString();
+            
+            setMessages(prev => [...prev, {
+                ...orderData,
+                _id: tempId,
+                timestamp: new Date().toISOString()
+            }]);
+            
+            socket.emit("sendMessage", orderData, (response) => {
+                if (response && response.success) {
+                    setMessages(prev => 
+                        prev.map(msg => 
+                            msg._id === tempId ? response.message : msg
+                        )
+                    );
+                } else {
+                    setMessages(prev => prev.filter(msg => msg._id !== tempId));
+                }
+            });
+            
+            scrollToBottom();
+        } catch (err) {
+            console.error("Error sending order:", err);
+        } finally {
+            setSending(false);
+            setOrderMessage(null);
+        }
+    };
+
+    const handlePlaceOrder = (message) => {
+        console.log("Placing order:", message);
+        alert(`Order placed for: ${message.orderDetails.title}`);
+    };
+
+    const handleCancelOrder = (message) => {
+        console.log("Order cancelled:", message);
+    };
+
     const sendMessage = async (e) => {
         e.preventDefault();
+        
+        if (orderMessage) {
+            handleSendOrder(orderMessage);
+            return;
+        }
+        
         if (!newMessage.trim() || !activeChat || sending) return;
 
         setSending(true);
@@ -208,16 +253,15 @@ export default function Inbox({ user }) {
             receiverId: activeChat._id,
             senderModel: user.type || "Client",
             receiverModel: activeChat.userType || "Freelancer",
-            message: newMessage.trim()
+            message: newMessage.trim(),
+            containsAITag: newMessage.includes('@ai')
         };
 
         console.log("Sending message:", messageData);
 
         try {
-            // Create a temporary ID for the optimistic update
             const tempId = 'temp-' + Date.now().toString();
             
-            // Add message to UI immediately (optimistic update)
             setMessages(prev => [...prev, {
                 ...messageData,
                 _id: tempId,
@@ -226,21 +270,25 @@ export default function Inbox({ user }) {
             
             setNewMessage("");
             
-            // Send via socket only (don't use HTTP endpoint)
-            socket.emit("sendMessage", messageData, (response) => {
-                // This is the acknowledgment callback
+            socket.emit("sendMessage", messageData, async (response) => {
                 if (response && response.success) {
-                    console.log("Message sent successfully:", response.message);
-                    
-                    // Optional: Update the temporary message with the real one
                     setMessages(prev => 
                         prev.map(msg => 
                             msg._id === tempId ? response.message : msg
                         )
                     );
+                    
+                    if (newMessage.includes('@ai')) {
+                        await handleGeminiRequest(
+                            newMessage.trim(),
+                            user.id,
+                            activeChat._id,
+                            user.type || "Client",
+                            activeChat.userType || "Freelancer",
+                            socket
+                        );
+                    }
                 } else {
-                    console.error("Failed to send message:", response?.error);
-                    // Handle the error, maybe revert the optimistic update
                     setMessages(prev => prev.filter(msg => msg._id !== tempId));
                 }
             });
@@ -248,7 +296,6 @@ export default function Inbox({ user }) {
             scrollToBottom();
         } catch (err) {
             console.error("Error sending message:", err);
-            // Remove optimistic update if failed
             setMessages(prev => prev.filter(msg => msg._id !== tempId));
         } finally {
             setSending(false);
@@ -265,7 +312,6 @@ export default function Inbox({ user }) {
 
     return (
         <div className="h-[calc(100vh-80px)] w-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            {/* Chat List View */}
             {!activeChat ? (
                 <motion.div 
                     initial={{ opacity: 0 }}
@@ -282,40 +328,39 @@ export default function Inbox({ user }) {
                         </div>
                     ) : chats.length > 0 ? (
                         <div className="flex-1 overflow-y-auto">
-        {chats.map(chat => (
-            <motion.div
-                key={chat._id}
-                whileTap={{ scale: 0.98 }}
-                className="p-4 border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors"
-                onClick={() => selectChat(chat)}
-            >
-                <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium text-lg">
-                        {getChatName(chat).charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-center">
-                            <h3 className="font-semibold truncate">{getChatName(chat)}</h3>
-                            <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {chat.timestamp ? formatTime(chat.timestamp) : ''}
-                            </span>
+                            {chats.map(chat => (
+                                <motion.div
+                                    key={chat._id}
+                                    whileTap={{ scale: 0.98 }}
+                                    className="p-4 border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                                    onClick={() => selectChat(chat)}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium text-lg">
+                                            {getChatName(chat).charAt(0).toUpperCase()}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex justify-between items-center">
+                                                <h3 className="font-semibold truncate">{getChatName(chat)}</h3>
+                                                <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                    {chat.timestamp ? formatTime(chat.timestamp) : ''}
+                                                </span>
+                                            </div>
+                                            <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                                                {chat.lastMessage || "No messages yet"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
-                            {chat.lastMessage || "No messages yet"}
-                        </p>
-                    </div>
-                </div>
-            </motion.div>
-        ))}
-    </div>
-) : (
-    <div className="flex-1 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
-        <p className="mb-4">No conversations yet</p>
-    </div>
-)}
+                    ) : (
+                        <div className="flex-1 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+                            <p className="mb-4">No conversations yet</p>
+                        </div>
+                    )}
                 </motion.div>
             ) : (
-                /* Chat Conversation View */
                 <AnimatePresence>
                     <motion.div
                         key="chat-view"
@@ -325,7 +370,6 @@ export default function Inbox({ user }) {
                         transition={{ type: 'spring', damping: 25 }}
                         className="h-full flex flex-col"
                     >
-                        {/* Chat Header */}
                         <div className="p-3 border-b dark:border-gray-700 flex items-center gap-3 bg-white dark:bg-gray-800">
                             <button 
                                 onClick={() => setActiveChat(null)}
@@ -343,33 +387,51 @@ export default function Inbox({ user }) {
                             </div>
                         </div>
 
-                        {/* Messages Area */}
                         <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
                             {messages.length > 0 ? (
                                 messages.map((msg) => (
-                                    <motion.div
-                                        key={msg._id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        className={`flex ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}
-                                    >
-                                        <div 
-                                            className={`max-w-[80%] p-3 rounded-lg ${
-                                                msg.senderId === user.id 
-                                                    ? 'bg-blue-500 text-white rounded-br-none' 
-                                                    : 'bg-gray-200 dark:bg-gray-700 rounded-bl-none'
-                                            }`}
+                                    msg.isOrder ? (
+                                        <motion.div
+                                            key={msg._id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className={`flex ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}
                                         >
-                                            <p>{msg.message}</p>
-                                            <p className={`text-xs mt-1 text-right ${
-                                                msg.senderId === user.id 
-                                                    ? 'text-blue-100' 
-                                                    : 'text-gray-500 dark:text-gray-400'
-                                            }`}>
-                                                {formatTime(msg.timestamp)}
-                                            </p>
-                                        </div>
-                                    </motion.div>
+                                            <OrderMessageCard
+                                                orderDetails={msg.orderDetails}
+                                                isClient={msg.receiverId === user.id && user.type === 'Client'}
+                                                onPlaceOrder={() => handlePlaceOrder(msg)}
+                                                onCancelOrder={() => handleCancelOrder(msg)}
+                                            />
+                                        </motion.div>
+                                    ) : (
+                                        <motion.div
+                                            key={msg._id}
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            className={`flex ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}
+                                        >
+                                            <div 
+                                                className={`max-w-[80%] p-3 rounded-lg ${
+                                                    msg.senderId === user.id 
+                                                        ? 'bg-blue-500 text-white rounded-br-none' 
+                                                        : 'bg-gray-200 dark:bg-gray-700 rounded-bl-none'
+                                                }`}
+                                            >
+                                                <p>
+                                                    <AITagHighlighter text={msg.message} />
+                                                </p>
+                                                <p className={`text-xs mt-1 text-right ${
+                                                    msg.senderId === user.id 
+                                                        ? 'text-blue-100' 
+                                                        : 'text-gray-500 dark:text-gray-400'
+                                                }`}>
+                                                    {formatTime(msg.timestamp)}
+                                                    {msg.isAIResponse && " (AI Response)"}
+                                                </p>
+                                            </div>
+                                        </motion.div>
+                                    )
                                 ))
                             ) : (
                                 <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
@@ -379,7 +441,6 @@ export default function Inbox({ user }) {
                             <div ref={messagesEndRef} />
                         </div>
 
-                        {/* Message Input */}
                         <form 
                             onSubmit={sendMessage}
                             className="p-3 border-t dark:border-gray-700 bg-white dark:bg-gray-800"
@@ -394,10 +455,16 @@ export default function Inbox({ user }) {
                                     onChange={(e) => setNewMessage(e.target.value)}
                                     disabled={sending}
                                 />
+                                <ChatActionMenu
+                                    onFileUpload={() => console.log("File upload clicked")}
+                                    onAskAI={() => console.log("Ask AI clicked")}
+                                    onInitiateOrder={handleInitiateOrder}
+                                    isFreelancer={user.type === 'Freelancer'}
+                                />
                                 <button
                                     type="submit"
                                     className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors disabled:opacity-50"
-                                    disabled={!newMessage.trim() || sending}
+                                    disabled={(!newMessage.trim() && !orderMessage) || sending}
                                 >
                                     {sending ? (
                                         <Loader2 className="h-5 w-5 animate-spin" />
@@ -409,6 +476,21 @@ export default function Inbox({ user }) {
                         </form>
                     </motion.div>
                 </AnimatePresence>
+            )}
+
+            {showOrderModal && (
+                <OrderInitiationModal
+                    isOpen={showOrderModal}
+                    onClose={() => setShowOrderModal(false)}
+                    onSendOrder={(order) => {
+                        setOrderMessage(order);
+                        setShowOrderModal(false);
+                    }}
+                    senderId={user.id}
+                    receiverId={activeChat._id}
+                    senderModel={user.type || "Client"}
+                    receiverModel={activeChat.userType || "Freelancer"}
+                />
             )}
         </div>
     );
