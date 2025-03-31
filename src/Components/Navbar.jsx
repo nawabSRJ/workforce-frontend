@@ -1,65 +1,104 @@
-import React, { useState } from 'react';
-import { Menu, X } from 'lucide-react'; // Using lucide-react for menu icons
-import Logo from '../Components/Logo';
-// small change
+import React, { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
+import { Menu, X } from 'lucide-react'
+import Logo from '../Components/Logo'
 
 const Navbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10)
+    }
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
+    setIsMobileMenuOpen(!isMobileMenuOpen)
+  }
 
   return (
-    <nav className='navbar relative flex flex-row items-center justify-between sm:px-10 px-5 py-5 bg-white'>
-      {/* Logo */}
-      {/* <a className='text-3xl text-black'>WorkForce</a> */}
-      <Logo/>
-
-      {/* Mobile Menu Toggle (Only visible on mobile screens) */}
-      <div className='sm:hidden'>
-        {!isMobileMenuOpen ? (
-          <Menu 
-            onClick={toggleMobileMenu} 
-            className='cursor-pointer' 
-            size={24} 
-          />
-        ) : null}
-      </div>
-
-      {/* Mobile Menu Overlay */}
-      {isMobileMenuOpen && (
-        <div className='fixed inset-0 bg-green-300 z-50 sm:hidden'>
-          {/* Close Button - Positioned at top right */}
-          <div className='absolute top-5 right-5'>
-            <X 
-              onClick={toggleMobileMenu} 
-              className='cursor-pointer text-black' 
-              size={24} 
-            />
+    <>
+      <motion.nav 
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5 }}
+        className={`fixed w-full z-50 py-3 px-5 sm:px-10 backdrop-blur-lg ${scrolled ? 'bg-white/80 shadow-sm' : 'bg-white/30'} border-b border-white/20`}
+      >
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <Logo />
+          
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-8">
+            <div className="flex gap-6">
+              <a href="/contract" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Contract Gen</a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Services</a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">About</a>
+              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Contact</a>
+            </div>
+            
+            <button className="ml-6 px-5 py-2 bg-gradient-to-r from-purple-600 to-blue-500 text-white rounded-full font-medium shadow hover:shadow-md transition-all">
+              Sign Up
+            </button>
           </div>
-
-          {/* Menu Items - Centered */}
-          <div className='flex flex-col items-center justify-center h-full gap-6'>
-            <a href={'/contract'} className="text-2xl text-blue-500 hover:underline">Contract Gen</a>
-            <a href="#" className="text-2xl text-blue-500 hover:underline">Link 2</a>
-            <a href="#" className="text-2xl text-blue-500 hover:underline">Link 3</a>
-            <a href="#" className="text-2xl text-blue-500 hover:underline">Link 4</a>
-            <button className='rounded-full px-5 py-2 bg-black text-white text-xl'>Sign Up</button>
-          </div>
+          
+          {/* Mobile Menu Button */}
+          <button 
+            className="md:hidden p-2 rounded-lg bg-white/20 backdrop-blur-sm border border-gray-200"
+            onClick={toggleMobileMenu}
+          >
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+      </motion.nav>
+      
+      {/* Mobile Menu */}
+      {isMobileMenuOpen && (
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed inset-0 z-40 bg-white/95 backdrop-blur-lg pt-24 px-5 md:hidden"
+        >
+          <div className="flex flex-col items-center gap-8">
+            <a 
+              href="/contract" 
+              className="text-2xl font-medium text-gray-800 hover:text-blue-600 transition-colors"
+              onClick={toggleMobileMenu}
+            >
+              Contract Gen
+            </a>
+            <a 
+              href="#" 
+              className="text-2xl font-medium text-gray-800 hover:text-blue-600 transition-colors"
+              onClick={toggleMobileMenu}
+            >
+              Services
+            </a>
+            <a 
+              href="#" 
+              className="text-2xl font-medium text-gray-800 hover:text-blue-600 transition-colors"
+              onClick={toggleMobileMenu}
+            >
+              About
+            </a>
+            <a 
+              href="#" 
+              className="text-2xl font-medium text-gray-800 hover:text-blue-600 transition-colors"
+              onClick={toggleMobileMenu}
+            >
+              Contact
+            </a>
+            
+            <button className="mt-6 px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-500 text-white rounded-full font-medium text-lg shadow">
+              Sign Up
+            </button>
+          </div>
+        </motion.div>
       )}
+    </>
+  )
+}
 
-      {/* Desktop menu */}
-      <div className="hidden sm:flex flex-row items-center text-xl gap-5">
-        <a href={'/contract'} className="text-blue-500 hover:underline">Contract Gen</a>
-        <a href="#" className="text-blue-500 hover:underline">Link 2</a>
-        <a href="#" className="text-blue-500 hover:underline">Link 3</a>
-        <a href="#" className="text-2xl text-blue-500 hover:underline">Link 4</a>
-        <button className='rounded-full px-5 py-2 bg-black text-white text-xl'>Sign Up</button>
-      </div>
-    </nav>
-  );
-};
-
-export default Navbar;
+export default Navbar

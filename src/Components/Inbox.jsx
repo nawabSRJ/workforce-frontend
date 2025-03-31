@@ -1,57 +1,140 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { io } from 'socket.io-client';
 import axios from 'axios';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, Send, Loader2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const socket = io("http://localhost:8000");
+const socket = io("http://localhost:8000", {
+    autoConnect: false,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000
+});
 
 export default function Inbox({ user }) {
     const [messages, setMessages] = useState([]);
     const [newMessage, setNewMessage] = useState("");
     const [chats, setChats] = useState([]);
     const [activeChat, setActiveChat] = useState(null);
-    const [isMobileChatOpen, setIsMobileChatOpen] = useState(false);
     const [chatUsers, setChatUsers] = useState({});
     const [loading, setLoading] = useState(true);
+    const [sending, setSending] = useState(false);
+    const messagesEndRef = useRef(null);
+    const inputRef = useRef(null);
+
+    // Scroll to bottom of messages
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
 
     useEffect(() => {
-        socket.connect();
+        scrollToBottom();
+    }, [messages, activeChat]);
 
-        socket.on("connect", () => {
-            console.log("Socket connected:", socket.id);
-        });
+    // Handle socket reconnections
+    useEffect(() => {
+        const handleReconnect = () => {
+            console.log("Socket reconnected, rejoining room");
+            if (user?.id) {
+                socket.emit("joinUser", user.id);
+            }
+        };
+        
+        socket.on("connect", handleReconnect);
+        
+        return () => {
+            socket.off("connect", handleReconnect);
+        };
+    }, [user?.id]);
 
-        socket.on("receiveMessage", (data) => {
-            // Check if the message is related to the current active chat
-            if (activeChat && (data.senderId === activeChat._id || data.receiverId === activeChat._id)) {
-                setMessages((prev) => [...prev, data]);
+    // Socket connection and message handling
+    useEffect(() => {
+        if (!user?.id) return;
+
+        console.log("Connecting socket for user:", user.id);
+        
+        // Make sure socket is connected
+        if (!socket.connected) {
+            socket.connect();
+        }
+
+        // Join user's room
+        socket.emit("joinUser", user.id);
+        
+        // Clear any existing listeners to prevent duplicates
+        socket.off("receiveMessage");
+
+        // Set up message listener
+        socket.on("receiveMessage", (message) => {
+            console.log("Received message via socket:", message);
+            
+            // Update messages if this is the active chat
+            if (activeChat && 
+                ((message.senderId === activeChat._id && message.receiverId === user.id) || 
+                 (message.receiverId === activeChat._id && message.senderId === user.id))) {
+                
+                setMessages(prev => {
+                    // Check if we already have this message (prevents duplicates)
+                    const exists = prev.some(m => 
+                        (m._id === message._id) || 
+                        (m._id.toString().startsWith('temp-'))
+                    );
+                    
+                    if (!exists) {
+                        return [...prev, message];
+                    }
+                    return prev;
+                });
+                
+                scrollToBottom();
             }
             
-            // Also refresh the chats list to show the latest message
+            // Always refresh chat list to show latest messages
             fetchChats();
         });
 
-        return () => {
-            socket.off("receiveMessage");
-            socket.disconnect();
-        };
-    }, [activeChat]);
+        socket.on("connect_error", (err) => {
+            console.error("Socket connection error:", err);
+        });
 
-    // Fetch chats
+        return () => {
+            console.log("Cleaning up socket");
+            socket.off("receiveMessage");
+            socket.emit("leaveUser", user.id);
+        };
+    }, [user?.id, activeChat]);
+
+    // Fetch all chats for the user
     const fetchChats = async () => {
         try {
             setLoading(true);
+            
+            if (!user?.id) {
+                console.error("Cannot fetch chats: user ID is missing");
+                setLoading(false);
+                return;
+            }
+            
+            console.log("Fetching chats for:", user.id);
             const res = await axios.get(`http://localhost:8000/chats/${user.id}`);
-            console.log("Chats response:", res.data);
+            
+            console.log("Raw chat response:", res);
             
             if (res.data && Array.isArray(res.data)) {
+                console.log("Received chats:", res.data);
+                
+                // Check if the chat data is in the expected format
+                if (res.data.length > 0) {
+                    const sampleChat = res.data[0];
+                    console.log("Sample chat structure:", JSON.stringify(sampleChat));
+                    console.log("Chat _id exists?", Boolean(sampleChat._id));
+                    console.log("Chat userType exists?", Boolean(sampleChat.userType));
+                }
+                
                 setChats(res.data);
                 
                 // Fetch user details for each chat
                 const userDetailsPromises = res.data.map(async (chat) => {
                     try {
-                        // Determine if we should fetch client or freelancer details
-                        // This would need to be adjusted based on your specific user model structure
                         const endpoint = chat.userType === 'Freelancer' 
                             ? `/freelancers/${chat._id}`
                             : `/clients/${chat._id}`;
@@ -59,7 +142,7 @@ export default function Inbox({ user }) {
                         const userRes = await axios.get(`http://localhost:8000${endpoint}`);
                         return { id: chat._id, data: userRes.data };
                     } catch (error) {
-                        console.error(`Error fetching details for user ${chat._id}:`, error);
+                        console.error(`Error fetching user ${chat._id}:`, error);
                         return { id: chat._id, data: { name: "Unknown User" } };
                     }
                 });
@@ -71,27 +154,33 @@ export default function Inbox({ user }) {
                 });
                 
                 setChatUsers(userMap);
+            } else {
+                console.warn("Unexpected chats response format:", res.data);
+                setChats([]);
             }
-            setLoading(false);
         } catch (err) {
             console.error("Error fetching chats:", err);
+            if (err.response) {
+                console.error("Error response data:", err.response.data);
+                console.error("Error response status:", err.response.status);
+            }
+        } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
         fetchChats();
-    }, [user.id]);
+    }, [user?.id]);
 
-    const selectChat = async (chat) => {
-        setActiveChat(chat);
-        setIsMobileChatOpen(true);
-        
+    // Fetch messages for a specific chat
+    const fetchMessages = async (chatId) => {
         try {
-            const res = await axios.get(`http://localhost:8000/messages/${user.id}/${chat._id}`);
-            console.log("Messages response:", res.data);
+            console.log(`Fetching messages between ${user.id} and ${chatId}`);
+            const res = await axios.get(`http://localhost:8000/messages/${user.id}/${chatId}`);
             
-            if (res.data && res.data.success && Array.isArray(res.data.messages)) {
+            if (res.data?.success && Array.isArray(res.data.messages)) {
+                console.log("Received messages:", res.data.messages);
                 setMessages(res.data.messages);
             } else {
                 setMessages([]);
@@ -102,136 +191,224 @@ export default function Inbox({ user }) {
         }
     };
 
-    const sendMessage = (e) => {
+    const selectChat = (chat) => {
+        console.log("Selected chat:", chat);
+        setActiveChat(chat);
+        fetchMessages(chat._id);
+    };
+
+    const sendMessage = async (e) => {
         e.preventDefault();
-        if (!newMessage.trim() || !activeChat) return;
+        if (!newMessage.trim() || !activeChat || sending) return;
 
-        // Determine the model types based on your application logic
-        // This is an assumption - adjust based on your actual user types
-        const senderModel = user.type || "Client"; // Default to Client if not specified
-        const receiverModel = activeChat.userType || "Freelancer"; // Default to Freelancer if not specified
-
+        setSending(true);
+        
         const messageData = {
             senderId: user.id,
             receiverId: activeChat._id,
-            senderModel,
-            receiverModel,
-            message: newMessage.trim(),
-            timestamp: new Date().toISOString()
+            senderModel: user.type || "Client",
+            receiverModel: activeChat.userType || "Freelancer",
+            message: newMessage.trim()
         };
 
-        // Send via socket
-        socket.emit("sendMessage", messageData);
-        
-        // Also send via HTTP for persistence
-        axios.post('http://localhost:8000/send-message', messageData)
-            .then(res => console.log("Message sent successfully:", res.data))
-            .catch(err => console.error("Error sending message:", err));
+        console.log("Sending message:", messageData);
 
-        // Optimistically add to UI
-        setMessages((prev) => [...prev, messageData]);
-        setNewMessage("");
+        try {
+            // Create a temporary ID for the optimistic update
+            const tempId = 'temp-' + Date.now().toString();
+            
+            // Add message to UI immediately (optimistic update)
+            setMessages(prev => [...prev, {
+                ...messageData,
+                _id: tempId,
+                timestamp: new Date().toISOString()
+            }]);
+            
+            setNewMessage("");
+            
+            // Send via socket only (don't use HTTP endpoint)
+            socket.emit("sendMessage", messageData, (response) => {
+                // This is the acknowledgment callback
+                if (response && response.success) {
+                    console.log("Message sent successfully:", response.message);
+                    
+                    // Optional: Update the temporary message with the real one
+                    setMessages(prev => 
+                        prev.map(msg => 
+                            msg._id === tempId ? response.message : msg
+                        )
+                    );
+                } else {
+                    console.error("Failed to send message:", response?.error);
+                    // Handle the error, maybe revert the optimistic update
+                    setMessages(prev => prev.filter(msg => msg._id !== tempId));
+                }
+            });
+            
+            scrollToBottom();
+        } catch (err) {
+            console.error("Error sending message:", err);
+            // Remove optimistic update if failed
+            setMessages(prev => prev.filter(msg => msg._id !== tempId));
+        } finally {
+            setSending(false);
+        }
     };
 
     const getChatName = (chat) => {
-        if (chatUsers[chat._id] && chatUsers[chat._id].name) {
-            return chatUsers[chat._id].name;
-        }
-        
-        // Fallback
-        return chat.name || "Unknown User";
+        return chatUsers[chat._id]?.name || chat.name || "Unknown User";
+    };
+
+    const formatTime = (timestamp) => {
+        return new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
     return (
-        <div className="h-full w-full bg-gray-900">
-            {!isMobileChatOpen ? (
-                <div className="h-full flex flex-col">
-                    <div className="bg-gray-800 text-white py-4 px-6 font-semibold text-lg border-b border-gray-700">
-                        My Chats
+        <div className="h-[calc(100vh-80px)] w-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            {/* Chat List View */}
+            {!activeChat ? (
+                <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="h-full flex flex-col"
+                >
+                    <div className="p-4 border-b dark:border-gray-700">
+                        <h2 className="text-xl font-bold">Messages</h2>
                     </div>
-                    <div className="flex-1 overflow-y-auto">
-                        {loading ? (
-                            <p className="text-gray-400 text-center py-4">Loading chats...</p>
-                        ) : chats.length > 0 ? (
-                            chats.map(chat => (
-                                <div
-                                    key={chat._id}
-                                    className={`p-4 cursor-pointer border-b border-gray-700 hover:bg-gray-800 ${activeChat?._id === chat._id ? 'bg-gray-800' : ''}`}
-                                    onClick={() => selectChat(chat)}
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
-                                            <span className="text-white font-medium">
-                                                {getChatName(chat).charAt(0)}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <div className="text-white font-medium">{getChatName(chat)}</div>
-                                            <div className="text-gray-400 text-sm truncate">
-                                                {chat.lastMessage || "No messages yet"}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-gray-400 text-center py-4">No chats available</p>
-                        )}
+                    
+                    {loading ? (
+                        <div className="flex-1 flex items-center justify-center">
+                            <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
+                        </div>
+                    ) : chats.length > 0 ? (
+                        <div className="flex-1 overflow-y-auto">
+        {chats.map(chat => (
+            <motion.div
+                key={chat._id}
+                whileTap={{ scale: 0.98 }}
+                className="p-4 border-b dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-800 cursor-pointer transition-colors"
+                onClick={() => selectChat(chat)}
+            >
+                <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium text-lg">
+                        {getChatName(chat).charAt(0).toUpperCase()}
                     </div>
-                </div>
-            ) : (
-                <div className="h-screen flex flex-col">
-                    <div className="bg-gray-800 text-white py-3 px-4 flex items-center gap-3 border-b border-gray-700">
-                        <button onClick={() => setIsMobileChatOpen(false)} className="p-1 hover:bg-gray-700 rounded-full">
-                            <ChevronLeft className="w-6 h-6" />
-                        </button>
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                <span className="text-white font-medium">
-                                    {activeChat ? getChatName(activeChat).charAt(0) : '?'}
-                                </span>
-                            </div>
-                            <span className="font-medium">
-                                {activeChat ? getChatName(activeChat) : 'Unknown User'}
+                    <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-center">
+                            <h3 className="font-semibold truncate">{getChatName(chat)}</h3>
+                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                {chat.timestamp ? formatTime(chat.timestamp) : ''}
                             </span>
                         </div>
-                    </div>
-                    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-900">
-                        {messages.length > 0 ? (
-                            messages.map((msg, index) => (
-                                <div key={index} className={`flex ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}>
-                                    <div 
-                                        className={`p-3 rounded-lg max-w-[75%] ${
-                                            msg.senderId === user.id ? 'bg-blue-600 text-white' : 'bg-gray-700 text-white'
-                                        }`}
-                                    >
-                                        {msg.message}
-                                    </div>
-                                </div>
-                            ))
-                        ) : (
-                            <p className="text-gray-400 text-center py-4">No messages yet. Start the conversation!</p>
-                        )}
-                    </div>
-                    <div className="p-4 bg-gray-800 border-t border-gray-700">
-                        <form onSubmit={sendMessage} className="flex gap-2">
-                            <input
-                                type="text"
-                                className="flex-1 px-4 py-2 bg-gray-700 text-white rounded-lg"
-                                placeholder="Type a message..."
-                                value={newMessage}
-                                onChange={(e) => setNewMessage(e.target.value)}
-                            />
-                            <button 
-                                type="submit" 
-                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                                disabled={!activeChat}
-                            >
-                                Send
-                            </button>
-                        </form>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 truncate">
+                            {chat.lastMessage || "No messages yet"}
+                        </p>
                     </div>
                 </div>
+            </motion.div>
+        ))}
+    </div>
+) : (
+    <div className="flex-1 flex flex-col items-center justify-center text-gray-500 dark:text-gray-400">
+        <p className="mb-4">No conversations yet</p>
+    </div>
+)}
+                </motion.div>
+            ) : (
+                /* Chat Conversation View */
+                <AnimatePresence>
+                    <motion.div
+                        key="chat-view"
+                        initial={{ y: '100%', opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: '100%', opacity: 0 }}
+                        transition={{ type: 'spring', damping: 25 }}
+                        className="h-full flex flex-col"
+                    >
+                        {/* Chat Header */}
+                        <div className="p-3 border-b dark:border-gray-700 flex items-center gap-3 bg-white dark:bg-gray-800">
+                            <button 
+                                onClick={() => setActiveChat(null)}
+                                className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                            >
+                                <ChevronLeft className="h-6 w-6" />
+                            </button>
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-medium">
+                                    {getChatName(activeChat).charAt(0).toUpperCase()}
+                                </div>
+                                <div>
+                                    <h3 className="font-semibold">{getChatName(activeChat)}</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Messages Area */}
+                        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-900">
+                            {messages.length > 0 ? (
+                                messages.map((msg) => (
+                                    <motion.div
+                                        key={msg._id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className={`flex ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}
+                                    >
+                                        <div 
+                                            className={`max-w-[80%] p-3 rounded-lg ${
+                                                msg.senderId === user.id 
+                                                    ? 'bg-blue-500 text-white rounded-br-none' 
+                                                    : 'bg-gray-200 dark:bg-gray-700 rounded-bl-none'
+                                            }`}
+                                        >
+                                            <p>{msg.message}</p>
+                                            <p className={`text-xs mt-1 text-right ${
+                                                msg.senderId === user.id 
+                                                    ? 'text-blue-100' 
+                                                    : 'text-gray-500 dark:text-gray-400'
+                                            }`}>
+                                                {formatTime(msg.timestamp)}
+                                            </p>
+                                        </div>
+                                    </motion.div>
+                                ))
+                            ) : (
+                                <div className="h-full flex items-center justify-center text-gray-500 dark:text-gray-400">
+                                    <p>No messages yet. Start the conversation!</p>
+                                </div>
+                            )}
+                            <div ref={messagesEndRef} />
+                        </div>
+
+                        {/* Message Input */}
+                        <form 
+                            onSubmit={sendMessage}
+                            className="p-3 border-t dark:border-gray-700 bg-white dark:bg-gray-800"
+                        >
+                            <div className="flex gap-2">
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    className="flex-1 px-4 py-2 rounded-full bg-gray-100 dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="Type a message..."
+                                    value={newMessage}
+                                    onChange={(e) => setNewMessage(e.target.value)}
+                                    disabled={sending}
+                                />
+                                <button
+                                    type="submit"
+                                    className="p-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors disabled:opacity-50"
+                                    disabled={!newMessage.trim() || sending}
+                                >
+                                    {sending ? (
+                                        <Loader2 className="h-5 w-5 animate-spin" />
+                                    ) : (
+                                        <Send className="h-5 w-5" />
+                                    )}
+                                </button>
+                            </div>
+                        </form>
+                    </motion.div>
+                </AnimatePresence>
             )}
         </div>
     );

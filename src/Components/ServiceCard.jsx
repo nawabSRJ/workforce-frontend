@@ -1,36 +1,52 @@
 import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
-export default function ServiceCard({ name, desc, image }) {
-  const colors = ["bg-red-800", "bg-blue-700", "bg-rose-600", "bg-purple-800", "bg-pink-800", "bg-green-800","bg-teal-700","bg-amber-600", "bg-fuchsia-600", "bg-sky-600"];
-  const [bgCol,setBgCol] = useState("");
-  
-  useEffect(()=>{
+const ServiceCard = ({ name, desc, image }) => {
+  const colors = [
+    "bg-gradient-to-br from-purple-600 to-blue-500",
+    "bg-gradient-to-br from-rose-600 to-pink-500",
+    "bg-gradient-to-br from-emerald-600 to-teal-500",
+    "bg-gradient-to-br from-amber-600 to-orange-500",
+    "bg-gradient-to-br from-indigo-600 to-violet-500",
+    "bg-gradient-to-br from-cyan-600 to-blue-500",
+    "bg-gradient-to-br from-lime-600 to-green-500",
+    "bg-gradient-to-br from-red-600 to-rose-500",
+    "bg-gradient-to-br from-sky-600 to-blue-400",
+    "bg-gradient-to-br from-fuchsia-600 to-purple-500",
+  ];
+
+  const [bgCol, setBgCol] = useState("");
+
+  useEffect(() => {
     let newCol;
     let prevCol;
-    // pick until new color
-    do{
-      newCol = colors[Math.floor(Math.random() * colors.length)]
-    }while(newCol===prevCol);
-    setBgCol(newCol)
-  },[])
-  
+    do {
+      newCol = colors[Math.floor(Math.random() * colors.length)];
+    } while (newCol === prevCol);
+    setBgCol(newCol);
+  }, []);
+
   return (
-    <div className={`w-[180px] sm:w-[220px] min-h-[240px] sm:min-h-[280px] flex flex-col items-center ${bgCol} shadow-md hover:shadow-lg transition-all duration-300 rounded-lg overflow-hidden p-3`}>
-      
-      {/* Service Image */}
+    <motion.div
+      whileHover={{ y: -10 }}
+      className={`min-w-[220px] md:w-[260px] h-[320px] flex flex-col ${bgCol} rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300`}
+    >
       {image && (
-        <div className="w-full h-[100px] sm:h-[120px] overflow-hidden rounded-md">
-          <img src={image} alt={name} className="w-full h-full object-cover" />
+        <div className="w-full h-[140px] overflow-hidden">
+          <img
+            src={image}
+            alt={name}
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+          />
         </div>
       )}
 
-      {/* Service Details */}
-      <h1 className="text-center text-white font-semibold text-md sm:text-lg mt-3 break-words leading-tight">
-        {name}
-      </h1>
-      <p className="text-center text-white text-xs sm:text-sm mt-2 px-2 break-words whitespace-normal">
-        {desc}
-      </p>
-    </div>
+      <div className="p-5 flex-1 flex flex-col justify-center text-white">
+        <h3 className="text-xl font-bold mb-3 text-center">{name}</h3>
+        <p className="text-sm text-center opacity-90">{desc}</p>
+      </div>
+    </motion.div>
   );
-}
+};
+
+export default ServiceCard;

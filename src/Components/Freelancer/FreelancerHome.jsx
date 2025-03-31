@@ -5,6 +5,7 @@ import MetricsSection from './MetricsSection';
 import ReviewsSection from './ReviewsSection';
 
 export default function FreelancerHome({ freelancerData }) {
+  console.log(freelancerData);
   // Default data in case props aren't passed
   const defaultFreelancer = {
     username: 'saranshj123',
@@ -44,7 +45,7 @@ export default function FreelancerHome({ freelancerData }) {
     }
   ];
 
-  const reviews = freelancer.reviews.length > 0 ? freelancer.reviews : sampleReviews;
+  // const reviews = freelancer.reviews.length > 0 ? freelancer.reviews : sampleReviews;
 
   return (
     <div className="flex flex-col gap-6 w-full mt-5">
@@ -55,9 +56,9 @@ export default function FreelancerHome({ freelancerData }) {
             username={freelancer.username}
             role={freelancer.name}
             location={freelancer.location}
-            joinDate={freelancer.joinDate}
-            tags={freelancer.tags}
-            languages={freelancer.languages}
+            joinDate={freelancer.createdAt}
+            tags={freelancer.tags} 
+            languages={defaultFreelancer.languages} // todo : change later
           />
         </div>
         
@@ -67,7 +68,7 @@ export default function FreelancerHome({ freelancerData }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <StatCard 
               icon="$"
-              value={`$${freelancer.totalEarnings.toFixed(2)}`}
+              value={`$ ${freelancer.totalEarnings}`}
               label="Total Earnings"
               gradient="from-green-400 to-green-600"
               progressValue={freelancer.totalEarnings > 0 ? 50 : 0}
@@ -87,14 +88,14 @@ export default function FreelancerHome({ freelancerData }) {
           {/* Metrics Section */}
           <MetricsSection 
             rating={freelancer.rating}
-            completionRate={freelancer.completionRate}
-            responseTime={freelancer.responseTime}
+            completionRate={defaultFreelancer.completionRate} // todo : change later
+            responseTime={defaultFreelancer.responseTime} // todo : change later
           />
         </div>
       </div>
       
       {/* Reviews Section */}
-      <ReviewsSection reviews={reviews} avgRating={freelancer.rating} />
+      {/* <ReviewsSection reviews={reviews} avgRating={freelancer.rating} /> */}
     </div>
   );
 }

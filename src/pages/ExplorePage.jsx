@@ -2,20 +2,17 @@ import { Check, ChevronsUpDown } from 'lucide-react';
 import React, { useState, useEffect } from 'react'
 import { Menu, X, Search } from 'lucide-react';
 import ProfileCard from '../Components/ProfileCard';
-import StoryCard from '../Components/StoryCard'; // Assuming you have this component
-import OpenWorkCard from '../Components/OpenWorkCard'; // Assuming you have this component
-import { stories } from '../Data/stories'; // Keeping stories data as is
+import StoryCard from '../Components/StoryCard';
+import OpenWorkCard from '../Components/OpenWorkCard';
+import { stories } from '../Data/stories';
 import axios from 'axios';
-// import Combobox from '@/Components/ui/Combobox';
 
-// todo : make a "view full profile feature"
 export default function ExplorePage() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
   
-  // Page state to track which page we're on
   const [page, setPage] = useState('Freelancers');
 
   const categoryOpts = [
@@ -46,14 +43,10 @@ export default function ExplorePage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Fetch both freelancers and open tasks in parallel
         const [freelancersRes, openTasksRes] = await Promise.all([
           axios.get('http://localhost:8000/freelancers'),
           axios.get('http://localhost:8000/open-work')
         ]);
-        
-        console.log('Freelancers data:', freelancersRes.data);
-        console.log('Open Tasks data:', openTasksRes.data);
         
         setFreelancers(freelancersRes.data || []);
         setOpenTasks(openTasksRes.data || []);
@@ -89,16 +82,12 @@ export default function ExplorePage() {
   // Apply filters to the appropriate data based on current page
   useEffect(() => {
     try {
-      // Helper function to apply filters to any data array
       const applyFilters = (dataArray, searchField) => {
-        // Ensure dataArray is valid
         if (!Array.isArray(dataArray)) return [];
         let result = [...dataArray];
         
-        // Filter by search query using the dynamic searchField parameter
         if (searchQuery.trim()) {
           result = result.filter(item => {
-            // Check if item and the dynamic property exist and is a string
             return item && 
                    typeof item === 'object' && 
                    item[searchField] !== undefined && 
@@ -107,20 +96,16 @@ export default function ExplorePage() {
           });
         }
         
-        // Filter by category (only if not "All")
         if (filterData.category && filterData.category.value !== "All") {
           result = result.filter(item => {
-            // For freelancers, check if any tag matches the category
             if (searchField === 'name' && item.tags) {
               return item.tags.some(tag => tag === filterData.category.value);
             }
             
-            // For open tasks, check the category property directly
             if (searchField === 'projTitle' && item.category) {
               return item.category === filterData.category.value;
             }
             
-            // For other data types, check the category property
             return item && 
                    typeof item === 'object' && 
                    item.category !== undefined && 
@@ -128,10 +113,8 @@ export default function ExplorePage() {
           });
         }
         
-        // Filter by rating (only if not "All")
         if (filterData.rating && filterData.rating.value !== "All") {
           result = result.filter(item => {
-            // Skip rating filter for open tasks since they don't have ratings
             if (searchField === 'projTitle') {
               return true;
             }
@@ -147,20 +130,17 @@ export default function ExplorePage() {
         return result;
       };
       
-      // Apply filters to each data type with the appropriate search field
       setFilteredProfiles(applyFilters(validateData(freelancers || []), 'name'));
       setFilteredStories(applyFilters(validateData(stories || []), 'storyTitle'));
       setFilteredOpenWorks(applyFilters(validateData(openTasks || []), 'projTitle'));
     } catch (error) {
       console.error("Error in filtering data:", error);
-      // In case of error, reset to original validated data
       setFilteredProfiles(validateData(freelancers || []));
       setFilteredStories(validateData(stories || []));
       setFilteredOpenWorks(validateData(openTasks || []));
     }
-  }, [searchQuery, filterData, freelancers, openTasks]); // Added dependencies
+  }, [searchQuery, filterData, freelancers, openTasks]);
   
-  // Handle category selection
   const handleCategoryChange = (selectedOption) => {
     setFilterData(prev => ({
       ...prev,
@@ -168,7 +148,6 @@ export default function ExplorePage() {
     }));
   };
   
-  // Handle rating selection
   const handleRatingChange = (selectedOption) => {
     setFilterData(prev => ({
       ...prev,
@@ -176,13 +155,10 @@ export default function ExplorePage() {
     }));
   };
   
-  // Handle search
   const handleSearch = (e) => {
     e.preventDefault();
-    // The search is already applied via useEffect
   };
   
-  // Clear all filters
   const clearFilters = () => {
     setSearchQuery("");
     setFilterData({
@@ -191,7 +167,6 @@ export default function ExplorePage() {
     });
   };
 
-  // Get the current data and count based on the active page
   const getCurrentData = () => {
     switch(page) {
       case 'Freelancers':
@@ -206,11 +181,8 @@ export default function ExplorePage() {
   };
 
   const { data, count } = getCurrentData();
+  const showRatingFilter = page === 'Freelancers';
 
-  // ? Only show rating when page === 'Freelancers' evaluated to true i.e page is = freelancers
-  const showRatingFilter = page === 'Freelancers' ;
-
-  // Adjust search placeholder based on page
   const getSearchPlaceholder = () => {
     switch(page) {
       case 'Freelancers':
@@ -225,161 +197,227 @@ export default function ExplorePage() {
   };
 
   return (
-    <div className='flex sm:flex-row w-full h-full sm:pl-20 p-0'>
+    <div className='flex min-h-screen bg-gray-50'>
       {/* Mobile Toggle Button */}
-      <div className="sm:hidden fixed top-3 right-7 z-50">
-        {!isMobileMenuOpen ? (
-          <Menu onClick={toggleMobileMenu} className="text-blue-500 cursor-pointer" size={28} />
-        ) : (
-          <X onClick={toggleMobileMenu} className="text-blue-500 cursor-pointer" size={28} />
-        )}
+      <div className="sm:hidden fixed top-4 right-4 z-50">
+        <button
+          onClick={toggleMobileMenu}
+          className="p-2 rounded-md bg-gray-800 text-white hover:bg-gray-700 transition-all"
+        >
+          {!isMobileMenuOpen ? (
+            <Menu className="w-6 h-6" />
+          ) : (
+            <X className="w-6 h-6" />
+          )}
+        </button>
       </div>
 
-      {/* sidebar */}
-      <div className={`fixed left sm:w-1/7 h-screen bg-blue-500 flex flex-col p-2 ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-0.5'}`}>
-        <nav className=''>
-          <li 
-            className={`cursor-pointer my-4 ${page === 'Freelancers' ? 'bg-green-500' : 'bg-green-300'} rounded-xl w-fit px-2`} 
-            onClick={() => setPage('Freelancers')}
-          >
-            Freelancers
-          </li>
-          <li 
-            className={`cursor-pointer my-4 ${page === 'Stories' ? 'bg-green-500' : 'bg-green-300'} rounded-xl w-fit px-2`} 
-            onClick={() => setPage('Stories')}
-          >
-            Stories
-          </li>
-          <li 
-            className={`cursor-pointer my-4 ${page === 'Open Work' ? 'bg-green-500' : 'bg-green-300'} rounded-xl w-fit px-2`} 
-            onClick={() => setPage('Open Work')}
-          >
-            Open Work
-          </li>
-        </nav>
-      </div>
-
-      <div className="right sm:w-[90%] pl-5">
-        <div className="top header sm:h-24 h-12 bg-amber-400 text-center">
-          Ads or images here
+      {/* Sidebar - Inspired by Sanity docs */}
+      <div className={`fixed inset-y-0 left-0 z-40 w-64 bg-gray-900 text-white transition-transform duration-300 ease-in-out ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} sm:translate-x-0`}>
+        <div className="flex flex-col h-full p-6">
+          <div className="mb-8">
+            <h2 className="text-xl font-bold">Explore</h2>
+            <p className="text-gray-400 text-sm mt-1">Find freelancers, stories, and open work</p>
+          </div>
+          
+          <nav className="flex-1 space-y-1">
+            <button
+              onClick={() => setPage('Freelancers')}
+              className={`w-full cursor-pointer text-left px-4 py-3 rounded-lg transition-all flex items-center ${
+                page === 'Freelancers' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+              }`}
+            >
+              <span className="mr-3 ">👨‍💻</span>
+              Freelancers
+            </button>
+            
+            <button
+              onClick={() => setPage('Stories')}
+              className={`w-full cursor-pointer text-left px-4 py-3 rounded-lg transition-all flex items-center ${
+                page === 'Stories' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+              }`}
+            >
+              <span className="mr-3">📖</span>
+              Stories
+            </button>
+            
+            <button
+              onClick={() => setPage('Open Work')}
+              className={`w-full cursor-pointer text-left px-4 py-3 rounded-lg transition-all flex items-center ${
+                page === 'Open Work' 
+                  ? 'bg-blue-600 text-white' 
+                  : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+              }`}
+            >
+              <span className="mr-3">💼</span>
+              Open Work
+            </button>
+          </nav>
+          
+          <div className="mt-auto pt-4 border-t border-gray-800">
+            <p className="text-gray-400 text-sm">Need help?</p>
+            <a href="#" className="text-blue-400 hover:underline text-sm">Contact support</a>
+          </div>
         </div>
-        <div className="down">
-          <div className="filters bg-gray-400 w-full py-4 flex sm:flex-row flex-col items-start justify-center gap-3 px-0">
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 sm:ml-64">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6">
+          <h1 className="text-2xl font-bold">{page}</h1>
+          <p className="text-blue-100 mt-1">
+            {page === 'Freelancers' && 'Find skilled professionals for your projects'}
+            {page === 'Stories' && 'Read success stories from our community'}
+            {page === 'Open Work' && 'Browse available projects and opportunities'}
+          </p>
+        </div>
+
+        {/* Filters Section */}
+        <div className="bg-white p-6 border-b border-gray-200">
+          <div className="flex flex-col sm:flex-row gap-4">
             {/* Search Input */}
-            <form onSubmit={handleSearch} className="flex items-center w-full sm:w-1/4">
-              <div className="relative w-full">
+            <form onSubmit={handleSearch} className="flex-1">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
                 <input
                   type="text"
-                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                   placeholder={getSearchPlaceholder()}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <button 
-                  type="submit"
-                  className="absolute inset-y-0 right-0 flex items-center px-3 bg-blue-500 text-white rounded-r-md"
-                >
-                  <Search className="h-4 w-4" />
-                </button>
               </div>
             </form>
             
             {/* Category Filter */}
-            <div className="w-full sm:w-1/4">
+            <div className="flex-1">
               <Combobox 
                 options={categoryOpts} 
                 value={filterData.category?.value}
                 onChange={handleCategoryChange}
-                placeholder="Category" 
+                placeholder="Filter by category" 
               />
             </div>
             
-            {/* Rating Filter - Only show for relevant pages */}
+            {/* Rating Filter */}
             {showRatingFilter && (
-              <div className="w-full sm:w-1/7">
+              <div className="flex-1">
                 <Combobox 
                   options={ratingOpts} 
                   value={filterData.rating?.value}
                   onChange={handleRatingChange}
-                  placeholder="Rating" 
+                  placeholder="Filter by rating" 
                 />
               </div>
             )}
           </div>
           
-          {/* Filter counter and clear button */}
+          {/* Filter status */}
           {(searchQuery || filterData.category || filterData.rating) && (
-            <div className="bg-gray-100 px-4 py-2 flex justify-between items-center">
+            <div className="mt-4 flex justify-between items-center">
               <span className="text-sm text-gray-600">
-                Showing {count} result(s)
+                Showing {count} {count === 1 ? 'result' : 'results'}
+                {searchQuery && ` for "${searchQuery}"`}
               </span>
               <button 
                 onClick={clearFilters}
-                className="text-sm text-blue-500 hover:underline"
+                className="text-sm text-blue-600 hover:text-blue-800 font-medium"
               >
-                Clear filters
+                Clear all filters
               </button>
             </div>
           )}
-          
+        </div>
+
+        {/* Content Area */}
+        <div className="p-6">
           {/* Loading state */}
           {loading && (
-            <div className="py-8 text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-blue-500 border-r-transparent"></div>
-              <p className="mt-4 text-gray-600">Loading data...</p>
+            <div className="flex flex-col items-center justify-center py-12">
+              <div className="w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+              <p className="mt-4 text-gray-600">Loading {page.toLowerCase()}...</p>
             </div>
           )}
           
           {/* Error state */}
           {error && !loading && (
-            <div className="py-8 text-center text-red-500">
-              <p>{error}</p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+              <p className="text-red-600 font-medium">{error}</p>
               <button 
                 onClick={() => window.location.reload()} 
-                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded-md"
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Retry
+                Try again
               </button>
             </div>
           )}
           
-          {/* Conditional Rendering based on page state */}
+          {/* Results */}
           {!loading && !error && (
-            <div className="cards">
-              {count === 0 && (
-                <div className="py-8 text-center text-gray-500">
-                  No items match your search criteria
+            <div className="space-y-6 bg-green-400 ">
+              {count === 0 ? (
+                <div className="text-center py-12">
+                  <div className="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <Search className="text-gray-400 w-10 h-10" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900">No results found</h3>
+                  <p className="mt-1 text-gray-500">Try adjusting your search or filters</p>
+                  <button 
+                    onClick={clearFilters}
+                    className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                  >
+                    Clear all filters
+                  </button>
                 </div>
+              ) : (
+                <>
+                  {page === 'Freelancers' && (
+                    <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-4">
+                      {filteredProfiles.map((profile, index) => (
+                        <ProfileCard key={profile._id || index} {...profile} />
+                      ))}
+                    </div>
+                  )}
+                  
+                  {page === 'Stories' && (
+                    <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
+                      {filteredStories.map((story, index) => (
+                        <StoryCard key={story._id || index} {...story} />
+                      ))}
+                    </div>
+                  )}
+                  
+                  {page === 'Open Work' && (
+                    <div className="grid grid-cols-1 gap-6">
+                      {filteredOpenWorks.map((task, index) => (
+                        <OpenWorkCard 
+                          key={task._id || index}
+                          projTitle={task.projTitle}
+                          description={task.description}
+                          category={task.category}
+                          deadline={task.deadline}
+                          budgetAmount={task.budgetAmount}
+                          clientName={task.clientName}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
-              
-              {page === 'Freelancers' && filteredProfiles.map((profile, index) => (
-                <ProfileCard key={profile._id || index} {...profile} />
-              ))}
-              
-              {page === 'Stories' && filteredStories.map((story, index) => (
-                <StoryCard key={story._id || index} {...story} />
-              ))}
-              
-              {page === 'Open Work' && filteredOpenWorks.map((task, index) => (
-                <OpenWorkCard 
-                  key={task._id || index}
-                  projTitle={task.projTitle}
-                  description={task.description}
-                  category={task.category}
-                  deadline={task.deadline}
-                  budgetAmount={task.budgetAmount}
-                  clientName={task.clientName}
-                />
-              ))}
             </div>
           )}
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-// ---------------------------------------------------------------------------------------------
+// Combobox component remains exactly the same as provided
 const Combobox = ({ options, value, onChange, placeholder = "Select option..." }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -395,7 +433,7 @@ const Combobox = ({ options, value, onChange, placeholder = "Select option..." }
   };
 
   return (
-    <div className="relative w-1/1 max-w-xs mx-auto">
+    <div className="relative w-full">
       <div 
         className="flex items-center justify-between w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
