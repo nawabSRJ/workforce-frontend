@@ -101,7 +101,7 @@ export default function ClientAuth() {
 
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:8000/client-signup', {
+      const response = await fetch(`${backendURL}/client-signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
