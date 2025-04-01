@@ -6,7 +6,7 @@ import exploreVideo from '../assets/exploreVideo.mp4'
 import arrow1 from '../assets/arrow.webp'
 import ReviewComponent from '../Components/ReviewComponent';
 import Footer from '../Components/Footer';
-import FAQ from '../Components/faq';
+import FAQ from '../Components/FAQ';
 import { services } from '../Data/Services';
 import testimonials from '@/Data/testimonials';
 
