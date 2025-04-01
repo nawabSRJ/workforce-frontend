@@ -6,7 +6,7 @@ import axios from "axios";
 
 export default function ClientAuth() {
   const [isSignUp, setIsSignUp] = useState(true);
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = import.meta.env.VITE_REACT_BACKEND_URL;
   const [formData, setFormData] = useState({
     name: '',
     email: '',

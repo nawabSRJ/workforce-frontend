@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = import.meta.env.VITE_REACT_BACKEND_URL;
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };

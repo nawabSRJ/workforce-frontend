@@ -9,7 +9,7 @@ import axios from 'axios';
 
 export default function ExplorePage() {
 
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = import.meta.env.VITE_REACT_BACKEND_URL;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);

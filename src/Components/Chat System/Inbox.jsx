@@ -8,7 +8,7 @@ import OrderInitiationModal from './OrderInitiationModal';
 import ChatActionMenu from './ChatActionMenu';
 import { handleGeminiRequest } from './geminiService';
 import AITagHighlighter from './AITagHighlighter';
-const backendURL = import.meta.env.VITE_BACKEND_URL;
+const backendURL = import.meta.env.VITE_REACT_BACKEND_URL;
 const socket = io(`${backendURL}`, {
     autoConnect: false,
     reconnectionAttempts: 5,

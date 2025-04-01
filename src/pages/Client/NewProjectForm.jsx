@@ -10,7 +10,7 @@ const tabs = ["Account", "About Project", "Budget & Pricing", "Extras"];
 export default function NewProjectForm() {
     const [activeTab, setActiveTab] = useState(0);
     const navigate = useNavigate();
-    const backendURL = import.meta.env.VITE_BACKEND_URL;
+    const backendURL = import.meta.env.VITE_REACT_BACKEND_URL;
     // Project categories:
     const categories = [
         { value: "Web Development", label: "Web Development" },

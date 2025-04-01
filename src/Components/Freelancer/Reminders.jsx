@@ -9,7 +9,7 @@ export default function Reminders(props) {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [dateFilter, setDateFilter] = useState('all');
-    const backendURL = import.meta.env.VITE_BACKEND_URL;
+    const backendURL = import.meta.env.VITE_REACT_BACKEND_URL;
     function addNewReminder() {
         const newReminder = {
             username: "vaishnavi",

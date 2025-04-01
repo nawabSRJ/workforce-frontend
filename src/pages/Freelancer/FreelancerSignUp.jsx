@@ -16,7 +16,7 @@ export default function FreelancerSignUp({ switchToLogin }) {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(false);
   const [genderDropdownOpen, setGenderDropdownOpen] = useState(false);
-  const backendURL = import.meta.env.VITE_BACKEND_URL;
+  const backendURL = import.meta.env.VITE_REACT_BACKEND_URL;
   // Gender options
   const genderOptions = [
     { value: 'Male', label: 'Male' },
