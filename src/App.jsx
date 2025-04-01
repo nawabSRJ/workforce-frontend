@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -16,7 +16,7 @@ function App() {
         const token = localStorage.getItem("token");
 
         if (token) {
-            axios.post("http://localhost:8080/verifyToken", { token })
+            axios.post(`${backendURL}/verifyToken`, { token })
                 .then(res => {
                     if (res.data.status === "ok") {
                         navigate("/client-dash");

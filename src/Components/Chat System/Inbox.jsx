@@ -8,8 +8,8 @@ import OrderInitiationModal from './OrderInitiationModal';
 import ChatActionMenu from './ChatActionMenu';
 import { handleGeminiRequest } from './geminiService';
 import AITagHighlighter from './AITagHighlighter';
-
-const socket = io("http://localhost:8000", {
+const backendURL = import.meta.env.VITE_BACKEND_URL;
+const socket = io(`${backendURL}`, {
     autoConnect: false,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000
@@ -111,7 +111,7 @@ export default function Inbox({ user }) {
             }
             
             console.log("Fetching chats for:", user.id);
-            const res = await axios.get(`http://localhost:8000/chats/${user.id}`);
+            const res = await axios.get(`${backendURL}/chats/${user.id}`);
             
             console.log("Raw chat response:", res);
             
@@ -133,7 +133,7 @@ export default function Inbox({ user }) {
                             ? `/freelancers/${chat._id}`
                             : `/clients/${chat._id}`;
                             
-                        const userRes = await axios.get(`http://localhost:8000${endpoint}`);
+                        const userRes = await axios.get(`${backendURL}${endpoint}`);
                         return { id: chat._id, data: userRes.data };
                     } catch (error) {
                         console.error(`Error fetching user ${chat._id}:`, error);
@@ -170,7 +170,7 @@ export default function Inbox({ user }) {
     const fetchMessages = async (chatId) => {
         try {
             console.log(`Fetching messages between ${user.id} and ${chatId}`);
-            const res = await axios.get(`http://localhost:8000/messages/${user.id}/${chatId}`);
+            const res = await axios.get(`${backendURL}/messages/${user.id}/${chatId}`);
             
             if (res.data?.success && Array.isArray(res.data.messages)) {
                 console.log("Received messages:", res.data.messages);

@@ -6,7 +6,6 @@ import Inbox from '../../Components/Chat System/Inbox';
 import Reminders from '../../Components/Freelancer/Reminders';
 import Todo from '@/Components/Freelancer/Todo';
 import FreelancerHome from '@/Components/Freelancer/FreelancerHome';
-import axios from 'axios';
 
 export default function FreelancerDash() {
     const [select, setSelect] = useState('Home'); // tab state

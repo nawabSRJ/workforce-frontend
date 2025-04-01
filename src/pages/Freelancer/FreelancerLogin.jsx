@@ -9,7 +9,7 @@ export default function FreelancerLogin({ switchToSignUp }) {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   // Validate email format
   const isValidEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -34,7 +34,7 @@ export default function FreelancerLogin({ switchToSignUp }) {
     setLoading(true);
     
     try {
-      const response = await axios.post('http://localhost:8000/freelancer-login', {
+      const response = await axios.post(`${backendURL}/freelancer-login`, {
         email,
         password
       });

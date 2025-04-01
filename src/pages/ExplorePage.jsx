@@ -8,6 +8,8 @@ import { stories } from '../Data/stories';
 import axios from 'axios';
 
 export default function ExplorePage() {
+
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -44,8 +46,8 @@ export default function ExplorePage() {
       setLoading(true);
       try {
         const [freelancersRes, openTasksRes] = await Promise.all([
-          axios.get('http://localhost:8000/freelancers'),
-          axios.get('http://localhost:8000/open-work')
+          axios.get(`${backendURL}/freelancers`),
+          axios.get(`${backendURL}/open-work`)
         ]);
         
         setFreelancers(freelancersRes.data || []);

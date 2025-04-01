@@ -10,7 +10,7 @@ const tabs = ["Account", "About Project", "Budget & Pricing", "Extras"];
 export default function NewProjectForm() {
     const [activeTab, setActiveTab] = useState(0);
     const navigate = useNavigate();
-
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
     // Project categories:
     const categories = [
         { value: "Web Development", label: "Web Development" },
@@ -66,7 +66,7 @@ export default function NewProjectForm() {
             toast.error("Please fill all the fields before submitting.");
         }
         // ? POST code for when data completely filled
-        const res = await axios.post(`http://localhost:8000/open-task`,formData);
+        const res = await axios.post(`${backendURL}/open-task`,formData);
         if(res.data.status === "ok"){
             toast.success("Task Posted successfully!!") // todo : fix not showing up coz of navigate
             clearForm();

@@ -6,6 +6,7 @@ import axios from "axios";
 
 export default function ClientAuth() {
   const [isSignUp, setIsSignUp] = useState(true);
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -28,7 +29,7 @@ export default function ClientAuth() {
   async function handleSignIn(e) {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:8000/client-login", { 
+      const res = await axios.post(`${backendURL}/client-login`, { 
         email: formData.email, 
         password: formData.password 
       });

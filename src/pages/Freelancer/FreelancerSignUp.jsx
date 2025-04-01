@@ -16,7 +16,7 @@ export default function FreelancerSignUp({ switchToLogin }) {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(false);
   const [genderDropdownOpen, setGenderDropdownOpen] = useState(false);
-
+  const backendURL = import.meta.env.VITE_BACKEND_URL;
   // Gender options
   const genderOptions = [
     { value: 'Male', label: 'Male' },
@@ -179,7 +179,7 @@ export default function FreelancerSignUp({ switchToLogin }) {
     console.log('Sending signup data:', userData);
     
     try {
-      const response = await axios.post('http://localhost:8000/freelancer-signup', userData);
+      const response = await axios.post(`${backendURL}/freelancer-signup`, userData);
       console.log('Signup response:', response.data);
       
       if (response.data.status === 'ok') {

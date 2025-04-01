@@ -9,7 +9,7 @@ export default function Reminders(props) {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [dateFilter, setDateFilter] = useState('all');
-
+    const backendURL = import.meta.env.VITE_BACKEND_URL;
     function addNewReminder() {
         const newReminder = {
             username: "vaishnavi",
@@ -19,7 +19,7 @@ export default function Reminders(props) {
             message: "Reminder: Your project submission is due soon. hehe reminder app se mail bheja hai yeh :)",
             sendAt: new Date(Date.now() + 2 * 60 * 1000)
         }
-        axios.post("http://localhost:8000/add-reminder", newReminder)
+        axios.post(`${backendURL}/add-reminder`, newReminder)
             .then(res => console.log(res.data))
             .catch(err => console.error(err));
     }
