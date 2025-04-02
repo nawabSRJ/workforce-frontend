@@ -44,6 +44,7 @@ export default function ExplorePage() {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
+      console.log('Backend URL : ',backendURL)
       try {
         const [freelancersRes, openTasksRes] = await Promise.all([
           axios.get(`${backendURL}/freelancers`),

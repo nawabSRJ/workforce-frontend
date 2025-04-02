@@ -10,7 +10,7 @@ const GetStarted = () => {
         Choose Your Role
       </h1>
 
-      <div className="flex gap-8">
+      <div className="flex sm:flex-row flex-col gap-8">
         {/* Client Option */}
         <motion.div
           whileHover={{ scale: 1.1 }}

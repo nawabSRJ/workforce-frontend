@@ -57,7 +57,7 @@ export default function FreelancerDash() {
 
                 {select === 'Reminders' && (
                     <div className="">
-                        <Reminders />
+                        <Reminders freelancerData={freelancerData} />
                     </div>
                 )}
                 {select === 'Todo' && (

@@ -44,7 +44,7 @@ export default function ClientDash() {
                             className='sm:ml-5 cursor-pointer sm:inline sm:w-fit sm:my-0 block w-full my-3 bg-blue-600 hover:bg-blue-700'
                             onClick={() => navigate('/new-project')}
                         >
-                            <Plus size={18} className="mr-2" />
+                            {/* <Plus size={18} className="mr-2" /> */}
                             New Project
                         </Button>
                         <div className="grid md:grid-cols-2 gap-6 mt-4">
