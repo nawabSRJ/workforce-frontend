@@ -43,9 +43,9 @@ export default function Inbox({ user }) {
                 socket.emit("joinUser", user.id);
             }
         };
-        
+
         socket.on("connect", handleReconnect);
-        
+
         return () => {
             socket.off("connect", handleReconnect);
         };
@@ -55,37 +55,37 @@ export default function Inbox({ user }) {
         if (!user?.id) return;
 
         console.log("Connecting socket for user:", user.id);
-        
+
         if (!socket.connected) {
             socket.connect();
         }
 
         socket.emit("joinUser", user.id);
-        
+
         socket.off("receiveMessage");
 
         socket.on("receiveMessage", (message) => {
             console.log("Received message via socket:", message);
-            
-            if (activeChat && 
-                ((message.senderId === activeChat._id && message.receiverId === user.id) || 
-                 (message.receiverId === activeChat._id && message.senderId === user.id))) {
-                
+
+            if (activeChat &&
+                ((message.senderId === activeChat._id && message.receiverId === user.id) ||
+                    (message.receiverId === activeChat._id && message.senderId === user.id))) {
+
                 setMessages(prev => {
-                    const exists = prev.some(m => 
-                        (m._id === message._id) || 
+                    const exists = prev.some(m =>
+                        (m._id === message._id) ||
                         (m._id.toString().startsWith('temp-'))
                     );
-                    
+
                     if (!exists) {
                         return [...prev, message];
                     }
                     return prev;
                 });
-                
+
                 scrollToBottom();
             }
-            
+
             fetchChats();
         });
 
@@ -103,36 +103,36 @@ export default function Inbox({ user }) {
     const fetchChats = async () => {
         try {
             setLoading(true);
-            
+
             if (!user?.id) {
                 console.error("Cannot fetch chats: user ID is missing");
                 setLoading(false);
                 return;
             }
-            
+
             console.log("Fetching chats for:", user.id);
             const res = await axios.get(`${backendURL}/chats/${user.id}`);
-            
+
             console.log("Raw chat response:", res);
-            
+
             if (res.data && Array.isArray(res.data)) {
                 console.log("Received chats:", res.data);
-                
+
                 if (res.data.length > 0) {
                     const sampleChat = res.data[0];
                     console.log("Sample chat structure:", JSON.stringify(sampleChat));
                     console.log("Chat _id exists?", Boolean(sampleChat._id));
                     console.log("Chat userType exists?", Boolean(sampleChat.userType));
                 }
-                
+
                 setChats(res.data);
-                
+
                 const userDetailsPromises = res.data.map(async (chat) => {
                     try {
-                        const endpoint = chat.userType === 'Freelancer' 
+                        const endpoint = chat.userType === 'Freelancer'
                             ? `/freelancers/${chat._id}`
                             : `/clients/${chat._id}`;
-                            
+
                         const userRes = await axios.get(`${backendURL}${endpoint}`);
                         return { id: chat._id, data: userRes.data };
                     } catch (error) {
@@ -140,13 +140,13 @@ export default function Inbox({ user }) {
                         return { id: chat._id, data: { name: "Unknown User" } };
                     }
                 });
-                
+
                 const userDetails = await Promise.all(userDetailsPromises);
                 const userMap = {};
                 userDetails.forEach(detail => {
                     userMap[detail.id] = detail.data;
                 });
-                
+
                 setChatUsers(userMap);
             } else {
                 console.warn("Unexpected chats response format:", res.data);
@@ -171,7 +171,7 @@ export default function Inbox({ user }) {
         try {
             console.log(`Fetching messages between ${user.id} and ${chatId}`);
             const res = await axios.get(`${backendURL}/messages/${user.id}/${chatId}`);
-            
+
             if (res.data?.success && Array.isArray(res.data.messages)) {
                 console.log("Received messages:", res.data.messages);
                 setMessages(res.data.messages);
@@ -196,20 +196,20 @@ export default function Inbox({ user }) {
 
     const handleSendOrder = async (orderData) => {
         setSending(true);
-        
+
         try {
             const tempId = 'temp-' + Date.now().toString();
-            
+
             setMessages(prev => [...prev, {
                 ...orderData,
                 _id: tempId,
                 timestamp: new Date().toISOString()
             }]);
-            
+
             socket.emit("sendMessage", orderData, (response) => {
                 if (response && response.success) {
-                    setMessages(prev => 
-                        prev.map(msg => 
+                    setMessages(prev =>
+                        prev.map(msg =>
                             msg._id === tempId ? response.message : msg
                         )
                     );
@@ -217,7 +217,7 @@ export default function Inbox({ user }) {
                     setMessages(prev => prev.filter(msg => msg._id !== tempId));
                 }
             });
-            
+
             scrollToBottom();
         } catch (err) {
             console.error("Error sending order:", err);
@@ -227,9 +227,24 @@ export default function Inbox({ user }) {
         }
     };
 
-    const handlePlaceOrder = (message) => {
-        console.log("Placing order:", message);
-        alert(`Order placed for: ${message.orderDetails.title}`);
+
+    const handlePlaceOrder = async (message) => {
+        try {
+            const res = await axios.post(`${backendURL}/create-order`, {
+                clientId: user.id,
+                freelancerId: activeChat._id,
+                openTaskId: message.orderDetails.openTaskId,
+                amount: message.orderDetails.amount
+            });
+
+            if (res.data.success) {
+                alert('Order placed successfully!');
+                // You might want to refresh projects list here
+            }
+        } catch (error) {
+            console.error("Error placing order:", error);
+            alert('Failed to place order');
+        }
     };
 
     const handleCancelOrder = (message) => {
@@ -238,16 +253,16 @@ export default function Inbox({ user }) {
 
     const sendMessage = async (e) => {
         e.preventDefault();
-        
+
         if (orderMessage) {
             handleSendOrder(orderMessage);
             return;
         }
-        
+
         if (!newMessage.trim() || !activeChat || sending) return;
 
         setSending(true);
-        
+
         const messageData = {
             senderId: user.id,
             receiverId: activeChat._id,
@@ -261,23 +276,23 @@ export default function Inbox({ user }) {
 
         try {
             const tempId = 'temp-' + Date.now().toString();
-            
+
             setMessages(prev => [...prev, {
                 ...messageData,
                 _id: tempId,
                 timestamp: new Date().toISOString()
             }]);
-            
+
             setNewMessage("");
-            
+
             socket.emit("sendMessage", messageData, async (response) => {
                 if (response && response.success) {
-                    setMessages(prev => 
-                        prev.map(msg => 
+                    setMessages(prev =>
+                        prev.map(msg =>
                             msg._id === tempId ? response.message : msg
                         )
                     );
-                    
+
                     if (newMessage.includes('@ai')) {
                         await handleGeminiRequest(
                             newMessage.trim(),
@@ -292,7 +307,7 @@ export default function Inbox({ user }) {
                     setMessages(prev => prev.filter(msg => msg._id !== tempId));
                 }
             });
-            
+
             scrollToBottom();
         } catch (err) {
             console.error("Error sending message:", err);
@@ -313,7 +328,7 @@ export default function Inbox({ user }) {
     return (
         <div className="h-[calc(100vh-80px)] w-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             {!activeChat ? (
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="h-full flex flex-col"
@@ -321,7 +336,7 @@ export default function Inbox({ user }) {
                     <div className="p-4 border-b dark:border-gray-700">
                         <h2 className="text-xl font-bold">Messages</h2>
                     </div>
-                    
+
                     {loading ? (
                         <div className="flex-1 flex items-center justify-center">
                             <Loader2 className="animate-spin h-8 w-8 text-blue-500" />
@@ -371,7 +386,7 @@ export default function Inbox({ user }) {
                         className="h-full flex flex-col"
                     >
                         <div className="p-3 border-b dark:border-gray-700 flex items-center gap-3 bg-white dark:bg-gray-800">
-                            <button 
+                            <button
                                 onClick={() => setActiveChat(null)}
                                 className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
                             >
@@ -411,21 +426,19 @@ export default function Inbox({ user }) {
                                             animate={{ opacity: 1, y: 0 }}
                                             className={`flex ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}
                                         >
-                                            <div 
-                                                className={`max-w-[80%] p-3 rounded-lg ${
-                                                    msg.senderId === user.id 
-                                                        ? 'bg-blue-500 text-white rounded-br-none' 
+                                            <div
+                                                className={`max-w-[80%] p-3 rounded-lg ${msg.senderId === user.id
+                                                        ? 'bg-blue-500 text-white rounded-br-none'
                                                         : 'bg-gray-200 dark:bg-gray-700 rounded-bl-none'
-                                                }`}
+                                                    }`}
                                             >
                                                 <p>
                                                     <AITagHighlighter text={msg.message} />
                                                 </p>
-                                                <p className={`text-xs mt-1 text-right ${
-                                                    msg.senderId === user.id 
-                                                        ? 'text-blue-100' 
+                                                <p className={`text-xs mt-1 text-right ${msg.senderId === user.id
+                                                        ? 'text-blue-100'
                                                         : 'text-gray-500 dark:text-gray-400'
-                                                }`}>
+                                                    }`}>
                                                     {formatTime(msg.timestamp)}
                                                     {msg.isAIResponse && " (AI Response)"}
                                                 </p>
@@ -441,7 +454,7 @@ export default function Inbox({ user }) {
                             <div ref={messagesEndRef} />
                         </div>
 
-                        <form 
+                        <form
                             onSubmit={sendMessage}
                             className="p-3 border-t dark:border-gray-700 bg-white dark:bg-gray-800"
                         >

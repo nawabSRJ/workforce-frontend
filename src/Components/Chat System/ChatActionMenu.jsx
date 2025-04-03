@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Paperclip } from 'lucide-react';
 
 const ChatActionMenu = ({ 
@@ -8,15 +8,34 @@ const ChatActionMenu = ({
   isFreelancer
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuButtonRef = useRef(null);
 
-  const toggleMenu = () => {
+  // Prevent default behavior for Enter key on the button
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter' && document.activeElement === menuButtonRef.current) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  const toggleMenu = (e) => {
+    // Only prevent default if it's a mouse click
+    if (e.type === 'click') {
+      e.preventDefault();
+    }
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
     <div className="relative">
       <button
+        ref={menuButtonRef}
         onClick={toggleMenu}
+        onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
         className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
       >
         <Paperclip className="h-5 w-5" />
@@ -42,7 +61,7 @@ const ChatActionMenu = ({
           >
             Ask AI
           </button>
-          {isFreelancer && (
+          {!isFreelancer && ( // Changed this condition to show for clients only
             <button
               onClick={() => {
                 onInitiateOrder();

@@ -1,6 +1,6 @@
 import React from 'react';
-// ? highlights the tagging of ai "@ai"
-const AITagHighlighter = ({ text }) => {
+
+const AITagHighlighter = ({ text, isSender }) => {
     if (!text.includes('@ai')) return <>{text}</>;
     
     const parts = text.split('@ai');
@@ -10,7 +10,7 @@ const AITagHighlighter = ({ text }) => {
                 <React.Fragment key={index}>
                     {part}
                     {index !== parts.length - 1 && (
-                        <span className="text-blue-500">@ai</span>
+                        <span className={isSender ? "text-white" : "text-blue-500"}>@ai</span>
                     )}
                 </React.Fragment>
             ))}
