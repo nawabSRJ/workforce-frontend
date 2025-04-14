@@ -8,6 +8,7 @@ import OrderInitiationModal from './OrderInitiationModal';
 import ChatActionMenu from './ChatActionMenu';
 import { handleGeminiRequest } from './geminiService';
 import AITagHighlighter from './AITagHighlighter';
+import PrivateOrderForm from '@/pages/Client/PrivateOrderForm';
 const backendURL = import.meta.env.VITE_REACT_BACKEND_URL;
 const socket = io(`${backendURL}`, {
     autoConnect: false,
@@ -25,11 +26,15 @@ export default function Inbox({ user }) {
     const [sending, setSending] = useState(false);
     const [showOrderModal, setShowOrderModal] = useState(false);
     const [orderMessage, setOrderMessage] = useState(null);
+    const [showPrivateOrderModal, setShowPrivateOrderModal] = useState(false);
     const messagesEndRef = useRef(null);
     const inputRef = useRef(null);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    };
+    const handleInitiatePrivateOrder = () => {
+        setShowPrivateOrderModal(true);
     };
 
     useEffect(() => {
@@ -327,6 +332,12 @@ export default function Inbox({ user }) {
 
     return (
         <div className="h-[calc(100vh-80px)] w-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            {showPrivateOrderModal && (
+                <PrivateOrderForm
+                    freelancerId={activeChat?._id}
+                    onClose={() => setShowPrivateOrderModal(false)}
+                />
+            )}
             {!activeChat ? (
                 <motion.div
                     initial={{ opacity: 0 }}
@@ -428,16 +439,16 @@ export default function Inbox({ user }) {
                                         >
                                             <div
                                                 className={`max-w-[80%] p-3 rounded-lg ${msg.senderId === user.id
-                                                        ? 'bg-blue-500 text-white rounded-br-none'
-                                                        : 'bg-gray-200 dark:bg-gray-700 rounded-bl-none'
+                                                    ? 'bg-blue-500 text-white rounded-br-none'
+                                                    : 'bg-gray-200 dark:bg-gray-700 rounded-bl-none'
                                                     }`}
                                             >
                                                 <p>
                                                     <AITagHighlighter text={msg.message} />
                                                 </p>
                                                 <p className={`text-xs mt-1 text-right ${msg.senderId === user.id
-                                                        ? 'text-blue-100'
-                                                        : 'text-gray-500 dark:text-gray-400'
+                                                    ? 'text-blue-100'
+                                                    : 'text-gray-500 dark:text-gray-400'
                                                     }`}>
                                                     {formatTime(msg.timestamp)}
                                                     {msg.isAIResponse && " (AI Response)"}
@@ -472,6 +483,7 @@ export default function Inbox({ user }) {
                                     onFileUpload={() => console.log("File upload clicked")}
                                     onAskAI={() => console.log("Ask AI clicked")}
                                     onInitiateOrder={handleInitiateOrder}
+                                    onInitiatePrivateOrder={handleInitiatePrivateOrder}
                                     isFreelancer={user.type === 'Freelancer'}
                                 />
                                 <button

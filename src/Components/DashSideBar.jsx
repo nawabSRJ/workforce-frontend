@@ -19,7 +19,9 @@ export default function DashSideBar({ select, setSelect }) {
   const menuItems = [
     { name: 'Home', icon: <Home className="w-5 h-5" /> },
     { name: 'Projects', icon: <Folder className="w-5 h-5" /> },
-    { name: 'Inbox', icon: <Mail className="w-5 h-5" /> }
+    { name: 'Inbox', icon: <Mail className="w-5 h-5" /> },
+    // ✅ Added Requests tab here (icon kept same for now — you can swap if you want)
+    { name: 'Requests', icon: <Mail className="w-5 h-5" /> }
   ];
 
   return (

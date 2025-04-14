@@ -1,77 +1,78 @@
-import React, { useState, useEffect, useRef } from 'react';
+// components/ChatActionMenu.jsx
+import React, { useState, useRef } from 'react';
 import { Paperclip } from 'lucide-react';
 
 const ChatActionMenu = ({ 
   onFileUpload, 
-  onAskAI, 
+  onAskAI,
   onInitiateOrder,
+  onInitiatePrivateOrder,
   isFreelancer
 }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const menuButtonRef = useRef(null);
+  const menuRef = useRef(null);
 
-  // Prevent default behavior for Enter key on the button
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Enter' && document.activeElement === menuButtonRef.current) {
-        e.preventDefault();
-      }
-    };
-
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const toggleMenu = (e) => {
-    // Only prevent default if it's a mouse click
-    if (e.type === 'click') {
-      e.preventDefault();
-    }
+  const handleToggleMenu = (e) => {
+    e.preventDefault();
     setIsMenuOpen(!isMenuOpen);
   };
 
   return (
-    <div className="relative">
+    <div className="relative" ref={menuRef}>
       <button
-        ref={menuButtonRef}
-        onClick={toggleMenu}
-        onKeyDown={(e) => e.key === 'Enter' && e.preventDefault()}
-        className="p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+        onClick={handleToggleMenu}
+        className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full"
       >
-        <Paperclip className="h-5 w-5" />
+        <Paperclip className="w-5 h-5 text-gray-600 dark:text-gray-300" />
       </button>
-      
+
       {isMenuOpen && (
-        <div className="absolute bottom-full left-0 mb-2 w-48 bg-white dark:bg-gray-800 rounded-md shadow-lg z-10 border border-gray-200 dark:border-gray-700">
-          <button
-            onClick={() => {
-              onFileUpload();
-              setIsMenuOpen(false);
-            }}
-            className="block w-full text-left px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          >
-            File Upload
-          </button>
-          <button
-            onClick={() => {
-              onAskAI();
-              setIsMenuOpen(false);
-            }}
-            className="block w-full text-left px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
-          >
-            Ask AI
-          </button>
-          {!isFreelancer && ( // Changed this condition to show for clients only
+        <div className="absolute bottom-full left-0 mb-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-xl border dark:border-gray-700 z-50">
+          <div className="p-2 space-y-1">
             <button
               onClick={() => {
-                onInitiateOrder();
+                onFileUpload();
                 setIsMenuOpen(false);
               }}
-              className="block w-full text-left px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
             >
-              Initiate Order
+              File Upload
             </button>
-          )}
+            
+            <button
+              onClick={() => {
+                onAskAI();
+                setIsMenuOpen(false);
+              }}
+              className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+            >
+              Ask AI
+            </button>
+            
+            {!isFreelancer && (
+              <>
+                <button
+                  onClick={() => {
+                    onInitiateOrder();
+                    setIsMenuOpen(false);
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                >
+                  Initiate Public Order
+                </button>
+                
+                <button
+                  onClick={() => {
+                    onInitiatePrivateOrder();
+                    setIsMenuOpen(false);
+                  }}
+                  className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md"
+                >
+                  Initiate Private Order
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
     </div>
