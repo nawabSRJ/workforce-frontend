@@ -6,6 +6,7 @@ import { FaChartLine, FaCheckCircle, FaMoneyBillWave } from 'react-icons/fa';
 export default function ClientHome({ clientData }) {
   // Default data in case props aren't passed
   const defaultClient = {
+     _id: '', // Add _id field to default
     name: 'Client Name',
     email: 'client@example.com',
     gender: 'Prefer not to say',
@@ -17,13 +18,14 @@ export default function ClientHome({ clientData }) {
 
   // Use provided data or fall back to defaults
   const client = clientData || defaultClient;
-
+  console.log('This is the client Id here : ', clientData.id)
   return (
     <div className="flex flex-col gap-6 w-full mt-5">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Left Column - Profile Card */}
         <div className="md:col-span-1">
           <ClientProfileCard 
+            _id={client.id}
             name={client.name}
             email={client.email}
             gender={client.gender}

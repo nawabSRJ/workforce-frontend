@@ -1,13 +1,38 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaMapMarkerAlt, FaClock, FaPencilAlt, FaUser, FaEnvelope, FaVenusMars } from 'react-icons/fa';
+import EditProfileModal from './EditProfileModal';
 
-export default function ClientProfileCard({ name, email, gender, joinDate, projectsPosted }) {
+export default function ClientProfileCard({ name, email, gender, joinDate, projectsPosted, phone, _id }) {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [userData, setUserData] = useState({
+    _id,
+    name,
+    email,
+    gender,
+    phone
+  });
+
   const getGenderIcon = () => {
-    switch(gender.toLowerCase()) {
+    switch(userData.gender.toLowerCase()) {
       case 'male': return <FaVenusMars className="text-blue-400" />;
       case 'female': return <FaVenusMars className="text-pink-400" />;
       default: return <FaVenusMars className="text-gray-400" />;
     }
+  };
+
+  const handleEditClick = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsEditModalOpen(false);
+  };
+
+  const updateUserData = (newData) => {
+    setUserData(prev => ({
+      ...prev,
+      ...newData
+    }));
   };
 
   return (
@@ -22,18 +47,18 @@ export default function ClientProfileCard({ name, email, gender, joinDate, proje
       
       {/* Profile Info */}
       <div className="p-6 pt-12 text-white">
-        <h2 className="text-xl font-bold">{name}</h2>
+        <h2 className="text-xl font-bold">{userData.name}</h2>
         <p className="text-gray-400 mb-4">Client</p>
         
         <div className="space-y-3 mb-4">
           <div className="flex items-center text-gray-300">
             <FaEnvelope className="mr-3 text-blue-400" />
-            <span className="truncate">{email}</span>
+            <span className="truncate">{userData.email}</span>
           </div>
           
           <div className="flex items-center text-gray-300">
             {getGenderIcon()}
-            <span className="ml-3 capitalize">{gender}</span>
+            <span className="ml-3 capitalize">{userData.gender}</span>
           </div>
           
           <div className="flex items-center text-gray-300">
@@ -57,10 +82,21 @@ export default function ClientProfileCard({ name, email, gender, joinDate, proje
         </div>
         
         {/* Edit Profile Button */}
-        <button className="flex items-center justify-center text-white bg-transparent border border-gray-600 rounded-md px-4 py-2 w-full hover:bg-gray-800 transition-colors">
+        <button 
+          className="flex items-center justify-center text-white bg-transparent border border-gray-600 rounded-md px-4 py-2 w-full hover:bg-gray-800 transition-colors"
+          onClick={handleEditClick}
+        >
           <FaPencilAlt className="mr-2" /> Edit Profile
         </button>
       </div>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal 
+        isOpen={isEditModalOpen}
+        onClose={handleModalClose}
+        userData={userData}
+        updateUserData={updateUserData}
+      />
     </div>
   );
 }
