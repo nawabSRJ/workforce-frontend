@@ -5,9 +5,11 @@ import MetricsSection from './MetricsSection';
 import ReviewsSection from './ReviewsSection';
 
 export default function FreelancerHome({ freelancerData }) {
-  console.log(freelancerData);
+  console.log('Freelancer data:', freelancerData);
+  
   // Default data in case props aren't passed
   const defaultFreelancer = {
+    _id: '',
     username: 'saranshj123',
     name: 'Developer',
     location: 'IN',
@@ -19,11 +21,23 @@ export default function FreelancerHome({ freelancerData }) {
     rating: 0,
     reviews: [],
     completionRate: 0,
-    responseTime: 'Under 2 hours'
+    responseTime: 'Under 2 hours',
+    bio: '',
+    portfolioWebsite: '',
+    linkedIn: '',
+    twitter: '',
+    email: '',
+    phone: { code: '', number: '' }
   };
 
   // Use provided data or fall back to defaults
   const freelancer = freelancerData || defaultFreelancer;
+
+  // Ensure these properties exist
+  const mergedFreelancer = {
+    ...defaultFreelancer,
+    ...freelancer
+  };
 
   // Sample reviews data (in real app, this would come from API/props)
   const sampleReviews = [
@@ -53,12 +67,20 @@ export default function FreelancerHome({ freelancerData }) {
         {/* Left Column - Profile Card */}
         <div className="md:col-span-1">
           <ProfileCard 
-            username={freelancer.username}
-            role={freelancer.name}
-            location={freelancer.location}
-            joinDate={freelancer.createdAt}
-            tags={freelancer.tags} 
-            languages={defaultFreelancer.languages} // todo : change later
+            _id={mergedFreelancer._id}
+            username={mergedFreelancer.username}
+            name={mergedFreelancer.name}
+            role={mergedFreelancer.role}
+            location={mergedFreelancer.location}
+            joinDate={mergedFreelancer.createdAt}
+            tags={mergedFreelancer.tags} 
+            languages={mergedFreelancer.languages || defaultFreelancer.languages}
+            bio={mergedFreelancer.bio}
+            portfolioWebsite={mergedFreelancer.portfolioWebsite}
+            linkedIn={mergedFreelancer.linkedIn}
+            twitter={mergedFreelancer.twitter}
+            email={mergedFreelancer.email}
+            phone={mergedFreelancer.phone}
           />
         </div>
         
@@ -68,28 +90,28 @@ export default function FreelancerHome({ freelancerData }) {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <StatCard 
               icon="$"
-              value={`$ ${freelancer.totalEarnings}`}
+              value={`$ ${mergedFreelancer.totalEarnings}`}
               label="Total Earnings"
               gradient="from-green-400 to-green-600"
-              progressValue={freelancer.totalEarnings > 0 ? 50 : 0}
+              progressValue={mergedFreelancer.totalEarnings > 0 ? 50 : 0}
               progressColor="bg-green-500"
             />
             
             <StatCard 
               icon="✓"
-              value={freelancer.completedProjects}
+              value={mergedFreelancer.completedProjects}
               label="Completed Projects"
               gradient="from-purple-500 to-indigo-600"
-              progressValue={freelancer.completedProjects > 0 ? 50 : 0}
+              progressValue={mergedFreelancer.completedProjects > 0 ? 50 : 0}
               progressColor="bg-purple-500"
             />
           </div>
           
           {/* Metrics Section */}
           <MetricsSection 
-            rating={freelancer.rating}
-            completionRate={defaultFreelancer.completionRate} // todo : change later
-            responseTime={defaultFreelancer.responseTime} // todo : change later
+            rating={mergedFreelancer.rating}
+            completionRate={mergedFreelancer.completionRate || defaultFreelancer.completionRate}
+            responseTime={mergedFreelancer.responseTime || defaultFreelancer.responseTime}
           />
         </div>
       </div>
