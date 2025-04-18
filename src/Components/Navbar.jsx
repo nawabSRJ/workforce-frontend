@@ -33,7 +33,6 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <div className="flex gap-6">
-              <a href="/contract" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Contract Gen</a>
               <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Services</a>
               <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">About</a>
               <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Contact</a>

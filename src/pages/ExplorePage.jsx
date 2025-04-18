@@ -42,6 +42,15 @@ export default function ExplorePage() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  // * prop function for updating the applicants count
+const updateOpenTaskApplicantCount = (taskId, newCount) => {
+  setOpenTasks(currentTasks => 
+    currentTasks.map(task => 
+      task._id === taskId ? {...task, applicationsCount: newCount} : task
+    )
+  );
+};
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -407,8 +416,10 @@ export default function ExplorePage() {
                           budgetAmount={task.budgetAmount}
                           clientName={task.clientName}
                           status={task.status}
+                          applicationsCount={task.applicationsCount}
                           freelancerNotes={task.freelancerNotes}
                           freelancerQues={task.freelancerQues}
+                          updateApplicantCount={updateOpenTaskApplicantCount}
                         />
                       ))}
                     </div>

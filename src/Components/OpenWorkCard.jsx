@@ -31,6 +31,7 @@ export default function OpenWorkCard({
   freelancerNotes,
   freelancerQues,
   applicationsCount = 0,
+  updateApplicantCount,
   _id
 }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -66,11 +67,18 @@ export default function OpenWorkCard({
 
   const handleRequestProject = () => setIsRequestModalOpen(true);
 
+  
   // function to update applicants
   const applyForTask = async (taskId) => {
     try {
       const response = await axios.patch(`${import.meta.env.VITE_REACT_BACKEND_URL}/open-task/apply/${taskId}`);
-      console.log("Updated applicationsCount:", response.data.task.applicationsCount);
+      const newCount = response.data.task.applicationsCount;
+      console.log("Updated applicationsCount:", newCount);
+
+      // Update the UI with the new count
+      if (updateApplicantCount) {
+        updateApplicantCount(taskId, newCount);
+      }
     } catch (error) {
       console.error("Error applying for task:", error);
     }
@@ -81,67 +89,67 @@ export default function OpenWorkCard({
       alert("Please enter a message");
       return;
     }
-  
+
     setIsSending(true);
     try {
       // Get the freelancer data from localStorage
       const rawUserData = localStorage.getItem('userData');
       console.log("Raw userData from localStorage:", rawUserData);
-      
+
       const freelancerData = JSON.parse(rawUserData || "{}");
       const token = localStorage.getItem('freelancerToken');
       const rawLoggedInfo = localStorage.getItem('logged');
       console.log("Raw logged info:", rawLoggedInfo);
-      
+
       const whoisit = JSON.parse(rawLoggedInfo || "{}");
-      
+
       // Check if the user is a freelancer
       if (whoisit.role !== 'freelancer') {
         throw new Error("Please login as freelancer to send requests");
       }
-      
+
       // Ensure we have a valid freelancer ID
       const freelancerId = freelancerData._id || freelancerData.id;
       if (!freelancerId) {
         throw new Error("Could not find freelancer ID. Please log in again.");
       }
-      
+
       // Ensure we have a valid task ID
       // This is the id of the OpenTask document from MongoDB
       if (!_id) {
         console.error("Task ID is undefined:", _id);
         throw new Error("Task ID is missing. Cannot send request.");
       }
-      
+
       console.log("Sending request with:", {
         freelancerId,
         projectId: _id, // This is the task ID (OpenTask document ID)
         note: message
       });
-      
+
       // Make the API request
       const response = await axios.post(`${import.meta.env.VITE_REACT_BACKEND_URL}/freelancer-request`, {
         freelancerId,
         projectId: _id, // Send the OpenTask ID as projectId
         note: message
       }, {
-        headers: { 
+        headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
-      
+
       console.log("Response:", response);
-      
+
       // If we get here, the request was successful
       await applyForTask(_id);
-      
+
       setIsRequestModalOpen(false);
       setMessage("");
       alert("Request sent successfully!");
     } catch (error) {
       console.error("Error sending request:", error);
-      
+
       // Enhanced error reporting
       if (error.response) {
         console.error("Server responded with:", error.response.data);

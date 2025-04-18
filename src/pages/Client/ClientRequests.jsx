@@ -19,46 +19,52 @@ export default function ClientRequests({ clientId }) {
     }
   };
 
-  useEffect(() => {
-    const fetchRequests = async () => {
-      if (!clientId) {
-        console.error("clientId is undefined");
-        setError("Client ID is missing. Please log in again.");
-        setLoading(false);
-        return;
-      }
+  const fetchRequests = async () => {
+    if (!clientId) {
+      console.error("clientId is undefined");
+      setError("Client ID is missing. Please log in again.");
+      setLoading(false);
+      return;
+    }
 
-      const clientEmail = getClientEmail();
-      if (!clientEmail) {
-        setError("Client email not found. Please log in again.");
-        setLoading(false);
-        return;
-      }
+    const clientEmail = getClientEmail();
+    if (!clientEmail) {
+      setError("Client email not found. Please log in again.");
+      setLoading(false);
+      return;
+    }
 
-      console.log(`Fetching requests for client ID: ${clientId}, email: ${clientEmail}`);
-      
-      try {
-        const res = await axios.get(`${backendURL}/api/freelancer-requests/${clientId}`);
-        console.log("Received all requests:", res.data);
-        
-        // Filter requests to only include those for projects owned by this client
-        // We do this by checking if the populated projectId's clientEmail matches this client's email
-        const filteredRequests = res.data.filter(req => {
-          if (!req.projectId || typeof req.projectId !== 'object') return false;
-          return req.projectId.clientEmail === clientEmail;
-        });
-        
-        console.log(`Filtered to ${filteredRequests.length} requests for this client`);
-        setRequests(filteredRequests);
-        setError(null);
-      } catch (err) {
-        console.error("Failed to fetch requests", err);
-        setError(err.response?.data?.message || "Failed to load requests");
-      } finally {
-        setLoading(false);
-      }
-    };
+    console.log(`Fetching requests for client ID: ${clientId}, email: ${clientEmail}`);
     
+    try {
+      setLoading(true);
+      const res = await axios.get(`${backendURL}/api/freelancer-requests/${clientId}`);
+      console.log("Received all requests:", res.data);
+      
+      // Filter requests to only include those for projects owned by this client
+      // We do this by checking if the populated projectId's clientEmail matches this client's email
+      const filteredRequests = res.data.filter(req => {
+        if (!req.projectId || typeof req.projectId !== 'object') return false;
+        return req.projectId.clientEmail === clientEmail;
+      });
+      
+      console.log(`Filtered to ${filteredRequests.length} requests for this client`);
+      setRequests(filteredRequests);
+      setError(null);
+    } catch (err) {
+      console.error("Failed to fetch requests", err);
+      setError(err.response?.data?.message || "Failed to load requests");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Function to remove a request from the UI
+  const removeRequest = (requestId) => {
+    setRequests(current => current.filter(req => req._id !== requestId));
+  };
+  
+  useEffect(() => {
     fetchRequests();
   }, [clientId, backendURL]);
 
@@ -76,7 +82,7 @@ export default function ClientRequests({ clientId }) {
       <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-center">
         <p className="text-red-600">{error}</p>
         <button 
-          onClick={() => window.location.reload()}
+          onClick={() => fetchRequests()}
           className="mt-2 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
         >
           Try Again
@@ -89,7 +95,12 @@ export default function ClientRequests({ clientId }) {
     <div className="space-y-4">
       {requests.length > 0 ? (
         requests.map(req => (
-          <ClientRequestCard key={req._id} request={req} />
+          <ClientRequestCard 
+            key={req._id} 
+            request={req} 
+            onRequestRemoved={removeRequest}
+            refreshRequests={fetchRequests}
+          />
         ))
       ) : (
         <div className="p-6 bg-gray-50 rounded-lg text-center">

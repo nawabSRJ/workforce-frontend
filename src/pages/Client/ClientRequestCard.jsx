@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 
-export default function ClientRequestCard({ request }) {
+export default function ClientRequestCard({ request, onRequestRemoved, refreshRequests }) {
+  const [isLoading, setIsLoading] = useState(false);
   const backendURL = import.meta.env.VITE_REACT_BACKEND_URL;
   
   // Handle potential null values safely
@@ -33,31 +34,44 @@ export default function ClientRequestCard({ request }) {
 
   const handleAccept = async () => {
     try {
+      setIsLoading(true);
       // Update request status to 'Accepted'
       await axios.patch(`${backendURL}/freelancer-request/${_id}`, {
         status: 'Accepted'
       });
       
       alert(`Request accepted from ${freelancer.name || 'freelancer'}`);
-      // You could add a callback to refresh the requests list
+      // Refresh the requests list
+      if (refreshRequests) refreshRequests();
     } catch (error) {
       console.error("Error accepting request:", error);
       alert("Failed to accept request. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleReject = async () => {
     try {
-      // Update request status to 'Rejected'
-      await axios.patch(`${backendURL}/freelancer-request/${_id}`, {
-        status: 'Rejected'
-      });
+      setIsLoading(true);
+      // Delete the request from the database
+      await axios.delete(`${backendURL}/freelancer-request/${_id}`);
       
-      alert(`Request rejected`);
-      // You could add a callback to refresh the requests list
+      // Remove the request from the UI
+      if (onRequestRemoved) {
+        onRequestRemoved(_id);
+      }
+      
+      // Optionally show a success message
+      alert(`Request from ${freelancer.name || 'freelancer'} has been rejected and removed`);
     } catch (error) {
       console.error("Error rejecting request:", error);
       alert("Failed to reject request. Please try again.");
+      
+      // Refresh the list in case of error to ensure UI is in sync with DB
+      if (refreshRequests) refreshRequests();
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -99,15 +113,21 @@ export default function ClientRequestCard({ request }) {
           <div className="flex justify-end gap-3 mt-3">
             <button
               onClick={handleReject}
-              className="px-3 py-1 text-red-500 border border-red-200 rounded hover:bg-red-50"
+              disabled={isLoading}
+              className={`px-3 py-1 text-red-500 border border-red-200 rounded hover:bg-red-50 ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              Reject
+              {isLoading ? 'Processing...' : 'Reject'}
             </button>
             <button
               onClick={handleAccept}
-              className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+              disabled={isLoading}
+              className={`px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 ${
+                isLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              Accept
+              {isLoading ? 'Processing...' : 'Accept'}
             </button>
           </div>
         )}
