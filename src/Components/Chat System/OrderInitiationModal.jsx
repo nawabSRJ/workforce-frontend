@@ -5,8 +5,11 @@ import axios from 'axios';
 const OrderInitiationModal = ({ 
   isOpen, 
   onClose, 
-  clientId,
-  onOrderCreated
+  onSendOrder,
+  senderId,
+  receiverId,
+  senderModel,
+  receiverModel
 }) => {
   const [openTasks, setOpenTasks] = useState([]);
   const [selectedTask, setSelectedTask] = useState(null);
@@ -18,8 +21,13 @@ const OrderInitiationModal = ({
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = await axios.get(`${backendURL}/open-tasks/${clientId}`);
-        setOpenTasks(response.data);
+        // We're assuming the sender is the client
+        const response = await axios.get(`${backendURL}/open-tasks/${senderId}`);
+        
+        // Filter to only show 'Open' status tasks
+        const availableTasks = response.data.filter(task => task.status === 'Open');
+        
+        setOpenTasks(availableTasks);
         setError('');
       } catch (err) {
         setError('Failed to load open tasks');
@@ -29,30 +37,44 @@ const OrderInitiationModal = ({
       }
     };
 
-    if (isOpen && clientId) {
+    if (isOpen && senderId) {
       fetchTasks();
     }
-  }, [isOpen, clientId]);
+  }, [isOpen, senderId, backendURL]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${backendURL}/create-project`, {
-        sourceType: 'open',
-        taskId: selectedTask._id,
-        clientId,
-        freelancerId: selectedTask.freelancerId,
-        amount: parseFloat(amount)
-      });
-
-      if (response.data) {
-        onOrderCreated(response.data);
-        onClose();
-      }
-    } catch (err) {
-      setError('Failed to create project');
-      console.error('Error creating project:', err);
+  // When a task is selected, set its budget as the initial amount
+  useEffect(() => {
+    if (selectedTask) {
+      setAmount(selectedTask.budgetAmount.toString());
     }
+  }, [selectedTask]);
+
+  const handleBack = () => {
+    setSelectedTask(null);
+    setAmount('');
+  };
+
+  const handleOrderCreation = () => {
+    if (!selectedTask || !amount) return;
+
+    // Create an order message object
+    const orderMessage = {
+      senderId,
+      receiverId,
+      senderModel,
+      receiverModel,
+      isOrder: true,
+      orderDetails: {
+        openTaskId: selectedTask._id,
+        title: selectedTask.projTitle,
+        description: selectedTask.description,
+        amount: parseFloat(amount),
+        deadline: selectedTask.deadline,
+        category: selectedTask.category
+      }
+    };
+
+    onSendOrder(orderMessage);
   };
 
   if (!isOpen) return null;
@@ -67,7 +89,7 @@ const OrderInitiationModal = ({
           <X className="h-6 w-6 text-gray-600 dark:text-gray-300" />
         </button>
 
-        <h2 className="text-2xl font-bold mb-6">Initiate Order</h2>
+        <h2 className="text-2xl font-bold mb-6">Initiate Public Order</h2>
 
         {loading ? (
           <div className="flex flex-col items-center justify-center py-8">
@@ -76,35 +98,41 @@ const OrderInitiationModal = ({
           </div>
         ) : error ? (
           <div className="text-red-500 text-center py-8">{error}</div>
+        ) : openTasks.length === 0 ? (
+          <div className="text-center py-8 text-gray-500">
+            <p>No open tasks available.</p>
+            <p className="text-sm mt-2">Create a public task first before initiating an order.</p>
+          </div>
         ) : !selectedTask ? (
           <div className="space-y-4">
             <h3 className="font-medium">Select an Open Task</h3>
-            {openTasks.length > 0 ? (
-              openTasks.map(task => (
+            <div className="max-h-96 overflow-y-auto space-y-3">
+              {openTasks.map(task => (
                 <div
                   key={task._id}
                   onClick={() => setSelectedTask(task)}
-                  className="p-4 border rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  className="p-4 border dark:border-gray-700 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                 >
                   <h4 className="font-medium">{task.projTitle}</h4>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
+                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                     Budget: ₹{task.budgetAmount}
                   </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                    {new Date(task.deadline).toLocaleDateString()}
+                  </p>
                 </div>
-              ))
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                No open tasks found
-              </div>
-            )}
+              ))}
+            </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-6">
             <div>
-              <h3 className="font-medium mb-4">{selectedTask.projTitle}</h3>
-              <p className="text-gray-600 dark:text-gray-300 mb-6">
-                {selectedTask.description}
-              </p>
+              <h3 className="font-medium mb-2">{selectedTask.projTitle}</h3>
+              <div className="bg-gray-50 dark:bg-gray-700 p-3 rounded-lg mb-4">
+                <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
+                  {selectedTask.description}
+                </p>
+              </div>
 
               <div className="space-y-4">
                 <div>
@@ -118,7 +146,7 @@ const OrderInitiationModal = ({
                     min="50"
                     step="50"
                     required
-                    className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                    className="w-full p-3 border dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
                     placeholder="Enter negotiated amount"
                   />
                 </div>
@@ -126,21 +154,23 @@ const OrderInitiationModal = ({
                 <div className="grid grid-cols-2 gap-4">
                   <button
                     type="button"
-                    onClick={() => setSelectedTask(null)}
-                    className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg"
+                    onClick={handleBack}
+                    className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg"
                   >
                     Back
                   </button>
                   <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg"
+                    type="button"
+                    onClick={handleOrderCreation}
+                    disabled={!amount}
+                    className="px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Place Order
+                    Send Order
                   </button>
                 </div>
               </div>
             </div>
-          </form>
+          </div>
         )}
       </div>
     </div>

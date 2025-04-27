@@ -186,10 +186,10 @@ export default function ProfileCard({
                 <FaEnvelope />
                 Contact
               </button>
-              <button className="flex items-center gap-2 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors text-sm">
+              {/* <button className="flex items-center gap-2 px-4 py-2 border border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors text-sm">
                 <FaUserPlus />
                 Follow
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
