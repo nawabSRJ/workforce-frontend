@@ -1,7 +1,7 @@
 import React from 'react'
 import { Search, Plus } from 'lucide-react';
 import DashSideBar from '../../Components/DashSideBar';
-import ProjectsCard from '../../Components/ProjectsCard';
+import ProjectsCard from '../../Components/Freelancer/ProjectsCard';
 import { useState, useEffect } from 'react';
 import { projects } from '../../Data/projects';
 import Inbox from '../../Components/Chat System/Inbox';
@@ -9,6 +9,7 @@ import { Button } from '@/Components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import ClientHome from '../../Components/Client/ClientHome';
 import ClientRequests from './ClientRequests';
+import ProjectsPage from '@/Components/Client/ProjectsPage';
 
 export default function ClientDash() {
     const [select, setSelect] = useState('Home');
@@ -19,12 +20,12 @@ export default function ClientDash() {
         // Get client data from localStorage
         const rawClientData = localStorage.getItem("clientData");
         console.log("Raw client data from localStorage:", rawClientData);
-        
+
         if (rawClientData) {
             try {
                 const parsedData = JSON.parse(rawClientData);
                 setClientData(parsedData);
-                
+
                 // Log client ID for debugging
                 console.log("Client ID:", parsedData._id || parsedData.id);
             } catch (err) {
@@ -48,7 +49,7 @@ export default function ClientDash() {
 
     // Client ID with validation
     const clientId = clientData._id || clientData.id;
-    
+
     return (
         <div className="flex">
             {/* Sidebar spacer */}
@@ -76,11 +77,11 @@ export default function ClientDash() {
                         >
                             New Project
                         </Button>
-                        <div className="grid md:grid-cols-2 gap-6 mt-4">
-                            {projects.map((project, index) => (
-                                <ProjectsCard key={index} {...project} />
-                            ))}
-                        </div>
+                        {select === 'Projects' && (
+                            <div className="">
+                                <ProjectsPage />
+                            </div>
+                        )}
                     </div>
                 )}
 
@@ -89,7 +90,7 @@ export default function ClientDash() {
                         <Inbox user={user} />
                     </div>
                 )}
-                
+
                 {select === 'Requests' && clientId && (
                     <>
                         <div className="mb-4">

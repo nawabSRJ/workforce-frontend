@@ -188,13 +188,13 @@ export default function ProjectsCard({
             </div>
 
             <div className="flex justify-between items-center">
-                <span className="text-blue-600 font-medium">${amount?.toFixed(2)}</span>
-                <button 
+                <span className="text-blue-600 font-medium">₹{amount?.toFixed(2)}</span>
+                {/* <button 
                     onClick={onViewDetails}
                     className="text-blue-600 text-sm cursor-pointer hover:underline"
                 >
                     View Details →
-                </button>
+                </button> */}
             </div>
         </div>
     );
