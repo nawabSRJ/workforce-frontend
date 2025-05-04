@@ -118,7 +118,7 @@ export default function Reminders({ freelancerData }) {
     return (
         <div className="p-2 sm:p-6 w-full max-w-full overflow-hidden">
             <ToastContainer position="top-right" autoClose={5000} />
-            <StatsContainer />
+            {/* <StatsContainer /> */}
             
             {/* Filters Section */}
             <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-3 sm:p-6 mb-4 sm:mb-6 shadow-sm">
@@ -169,7 +169,7 @@ export default function Reminders({ freelancerData }) {
                             onClick={() => setIsModalOpen(true)}
                         >
                             <Bell size={18} />
-                            <span className="hidden sm:inline">New Reminder</span>
+                            <span className="cursor-pointer hidden sm:inline">New Reminder</span>
                             <span className="sm:hidden">Add</span>
                         </Button>
                     </div>

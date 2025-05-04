@@ -1,37 +1,24 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Clock, CheckCircle, AlertCircle } from 'lucide-react';
+import { Clock, CheckCircle, AlertCircle, User } from 'lucide-react';
 
 export default function ProjectsCard({ 
+    _id,
     title, 
     description, 
-    tags, 
-    freelancerId, 
-    clientId,
+    tags = [], 
+    clientName,
     dueDate, 
-    progress, 
+    progress = 0, 
     amount, 
-    status, 
+    status = 'Pending', 
     completeDate,
-    revisionsAllowed,
-    revisionsLeft,
+    revisionsAllowed = 0,
+    revisionsLeft = 0,
     onViewDetails
 }) {
     const [isLoading, setIsLoading] = useState(false);
-
-    const handleStatusUpdate = async (newStatus) => {
-        setIsLoading(true);
-        try {
-            // Here you would call your API to update the project status
-            // await updateProjectStatus(projectId, newStatus);
-            toast.success(`Project marked as ${newStatus}`);
-        } catch (error) {
-            toast.error(`Failed to update status: ${error.message}`);
-        } finally {
-            setIsLoading(false);
-        }
-    };
 
     const formatDate = (dateString) => {
         if (!dateString) return 'Not set';
@@ -49,12 +36,13 @@ export default function ProjectsCard({
             case 'Completed': return 'bg-green-100 text-green-600';
             case 'Pending': return 'bg-yellow-100 text-yellow-600';
             case 'Revision Requested': return 'bg-purple-100 text-purple-600';
+            case 'Disputed': return 'bg-red-100 text-red-600';
             default: return 'bg-gray-100 text-gray-600';
         }
     };
 
     return (
-        <div className="p-4 border border-gray-200 rounded-lg mb-4 hover:shadow-md transition-shadow">
+        <div className="p-4 border border-gray-200 rounded-lg hover:shadow-md transition-shadow bg-white">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-2">
                 <div>
                     <div className="flex items-center gap-2 mb-2">
@@ -63,23 +51,27 @@ export default function ProjectsCard({
                             {status}
                         </span>
                     </div>
-                    <p className="text-gray-600 text-sm mb-2">{description}</p>
+                    <p className="text-gray-600 text-sm mb-2 line-clamp-2">{description}</p>
                 </div>
             </div>
 
-            <div className="flex flex-wrap gap-2 mb-3">
-                {tags?.map((tag, index) => (
-                    <span key={index} className="px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
-                        {tag}
-                    </span>
-                ))}
-            </div>   
+            {tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-3">
+                    {tags.map((tag, index) => (
+                        <span key={index} className="px-3 py-1 bg-gray-100 rounded-full text-xs text-gray-600">
+                            {tag}
+                        </span>
+                    ))}
+                </div>
+            )}   
 
             <div className="flex justify-between items-center mb-3">
                 <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+                    <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                        <User size={16} className="text-gray-500" />
+                    </div>
                     <div>
-                        <p className="text-sm">Freelancer ID: {freelancerId?.toString().slice(-6)}</p>
+                        <p className="text-sm">{clientName || 'Client'}</p>
                         <p className="text-xs text-gray-500">
                             {status === 'Completed' 
                                 ? `Completed: ${formatDate(completeDate)}` 
@@ -88,7 +80,7 @@ export default function ProjectsCard({
                     </div>
                 </div>
                 
-                {revisionsLeft !== undefined && (
+                {(revisionsLeft !== undefined && revisionsAllowed > 0) && (
                     <div className="flex items-center gap-1 text-xs">
                         <AlertCircle size={14} />
                         <span>Revisions: {revisionsLeft}/{revisionsAllowed}</span>
@@ -99,7 +91,7 @@ export default function ProjectsCard({
             <div className="mb-3">
                 <div className="flex justify-between mb-1">
                     <span className="text-sm">Progress</span>
-                    <span className="text-sm">{progress}%</span>
+                    <span className="text-sm">{Math.round(progress)}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                     <div
@@ -113,15 +105,13 @@ export default function ProjectsCard({
             </div>
 
             <div className="flex justify-between items-center">
-                <span className="text-blue-600 font-medium">${amount}</span>
-                <div className="flex gap-2">
-                    <button 
-                        onClick={onViewDetails}
-                        className="text-blue-600 text-sm cursor-pointer hover:underline"
-                    >
-                        View Details →
-                    </button>
-                </div>
+                <span className="text-blue-600 font-medium">${amount?.toFixed(2)}</span>
+                <button 
+                    onClick={onViewDetails}
+                    className="text-blue-600 text-sm cursor-pointer hover:underline"
+                >
+                    View Details →
+                </button>
             </div>
         </div>
     );

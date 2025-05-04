@@ -1,7 +1,7 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin } from "react-icons/fa"
-import Logo from '../Components/Logo'
+import Logo from './Logo'
 import { motion } from 'framer-motion'
 
 const Footer = () => {
@@ -28,17 +28,17 @@ const Footer = () => {
               <h3 className="text-lg font-bold mb-4">Company</h3>
               <ul className="space-y-2">
                 <li><a href="/about" className="text-gray-300 hover:text-white transition-colors">About Us</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Careers</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Blog</a></li>
+                <li><a href="/contact" className="text-gray-300 hover:text-white transition-colors">Contact Us</a></li>
+                <li><a href="/get-started" className="text-gray-300 hover:text-white transition-colors">Join Us</a></li>
               </ul>
             </div>
 
             <div>
               <h3 className="text-lg font-bold mb-4">Resources</h3>
               <ul className="space-y-2">
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Terms of Service</a></li>
+                <li><a href="/business" className="text-gray-300 hover:text-white transition-colors">For Business</a></li>
+                <li><a href="/privacypolicy" className="text-gray-300 hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="/customer" className="text-gray-300 hover:text-white transition-colors">For Customers</a></li>
               </ul>
             </div>
 

@@ -33,9 +33,10 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
             <div className="flex gap-6">
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Services</a>
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">About</a>
-              <a href="#" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Contact</a>
+              <a href={'/'} className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Home</a>
+              <a href="#services" className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Services</a>
+              <a href={'/about'} className="text-gray-700 hover:text-blue-600 transition-colors font-medium">About</a>
+              <a href={'/contact'} className="text-gray-700 hover:text-blue-600 transition-colors font-medium">Contact</a>
             </div>
             
             <button className="ml-6 px-5 cursor-pointer py-2 bg-gradient-to-r from-purple-600 to-blue-500 text-white rounded-full font-medium shadow hover:shadow-md transition-all">

@@ -24,8 +24,8 @@ return ( <div className="min-h-screen bg-white text-gray-900"> {/* Header Sectio
   <section className="bg-gray-100 py-12 text-center">
     <h2 className="text-3xl font-bold">Get Started Today</h2>
     <p className="mt-2">Hire the best freelancers for your projects</p>
-    <Link to="/pricing" className="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
-      View Pricing
+    <Link to="/get-started" className="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition">
+      Get Started
     </Link>
   </section>
   

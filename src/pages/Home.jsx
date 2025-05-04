@@ -62,7 +62,7 @@ const Home = () => {
       </section>
 
       {/* Infinite Marquee Services Section */}
-      <section className="py-16 bg-white relative overflow-hidden">
+      <section id='services' className="py-16 bg-white relative overflow-hidden">
         <h2 className="text-3xl font-bold text-center mb-12 bg-clip-text text-transparent bg-gradient-to-r from-purple-600 to-blue-500">
           Our Services
         </h2>

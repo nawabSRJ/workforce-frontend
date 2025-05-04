@@ -116,7 +116,7 @@ export default function Todo() {
                             </span>
                             <button
                                 onClick={undoDelete}
-                                className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md transition-colors"
+                                className="cursor-pointer flex items-center gap-1 bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded-md transition-colors"
                             >
                                 <Undo size={16} />
                                 Undo
@@ -130,7 +130,7 @@ export default function Todo() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                 <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-white">All Todos</h2>
                 <Button
-                    className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 transition-colors"
+                    className="cursor-pointer flex items-center gap-2 bg-blue-600 hover:bg-blue-700 transition-colors"
                     onClick={() => setIsDialogOpen(true)}
                 >
                     <Plus size={18} />
@@ -146,7 +146,7 @@ export default function Todo() {
                         <Button
                             onClick={clearIncompleteTasks}
                             variant="destructive"
-                            className="flex items-center gap-1"
+                            className="cursor-pointer flex items-center gap-1"
                             size="sm"
                         >
                             <Trash2 size={16} />
@@ -198,7 +198,7 @@ export default function Todo() {
                             <Button
                                 onClick={clearCompletedTasks}
                                 variant="destructive"
-                                className="flex items-center gap-1"
+                                className="cursor-pointer flex items-center gap-1"
                                 size="sm"
                             >
                                 <Trash2 size={16} />
@@ -325,14 +325,14 @@ const TodoDialog = ({ isOpen, onClose, onAddTask }) => {
                         <div className="p-5 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
                             <button
                                 onClick={onClose}
-                                className="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                                className="cursor-pointer px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleSave}
                                 disabled={!isValidTask}
-                                className={`px-4 py-2 rounded-lg transition-colors ${
+                                className={`cursor-pointer px-4 py-2 rounded-lg transition-colors ${
                                     isValidTask
                                         ? "bg-blue-600 text-white hover:bg-blue-700"
                                         : "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed"
