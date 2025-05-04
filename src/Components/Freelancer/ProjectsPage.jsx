@@ -17,10 +17,10 @@ export default function ProjectsPage() {
             try {
                 setIsLoading(true);
                 const response = await axios.get(`${import.meta.env.VITE_REACT_BACKEND_URL}/projects/${freelancerData.username}`);
-                
+
                 if (response.data && Array.isArray(response.data)) {
                     setProjects(response.data);
-                    console.log('This is the proj data : ',response.data)
+                    console.log('This is the proj data : ', response.data)
                 } else {
                     setProjects([]);
                     toast.info('No projects found');
@@ -52,18 +52,23 @@ export default function ProjectsPage() {
 
     return (
         <div className="mt-4">
-            <ToastContainer/>
+            <ToastContainer />
             {projects.length > 0 ? (
-                <motion.div 
+                <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="grid md:grid-cols-2 gap-6"
                 >
                     {projects.map((project) => (
-                        <ProjectsCard 
+                        <ProjectsCard
                             key={project._id}
                             {...project}
                             onViewDetails={() => handleViewDetails(project._id)}
+                            onProgressUpdate={(projectId, newProgress) => {
+                                setProjects(projects.map(p =>
+                                    p._id === projectId ? { ...p, progress: newProgress } : p
+                                ));
+                            }}
                         />
                     ))}
                 </motion.div>
