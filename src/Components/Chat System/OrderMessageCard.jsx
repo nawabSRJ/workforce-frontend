@@ -10,14 +10,12 @@ const OrderMessageCard = ({ orderDetails, isClient, onPlaceOrder, onCancelOrder 
     
     try {
       console.log("Calling parent onPlaceOrder function with orderDetails:", orderDetails);
-      await onPlaceOrder(orderDetails); // Pass the orderDetails
+      await onPlaceOrder(orderDetails);
       console.log("Parent onPlaceOrder function completed");
     } catch (error) {
       console.error("Error in OrderMessageCard.handlePlaceOrder:", error);
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1000);
+      setIsLoading(false);
     }
   };
 
